@@ -1,2 +1,5 @@
 # shopd
-Hugo compatible e-commerce plugin for the Caddy Web Server
+
+https://shopd.link
+
+Hugo compatible e-commerce with Caddy Web Server
