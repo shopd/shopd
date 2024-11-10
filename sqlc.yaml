@@ -1,5 +1,5 @@
 # https://docs.sqlc.dev/en/stable/reference/config.html#configuration
-version: 2
+version: "2"
 sql:
     - schema: "scripts/db/schema.sql"
       queries: "go/dbgen"
