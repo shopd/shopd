@@ -6,6 +6,8 @@ github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/godbus/dbus/v5 v5.0.4/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
+github.com/guregu/null v4.0.0+incompatible h1:4zw0ckM7ECd6FNNddc3Fu4aty9nTlpkkzH7dPn4/4Gw=
+github.com/guregu/null v4.0.0+incompatible/go.mod h1:ePGpQaN9cw0tj45IR5E5ehMvsFlLlQZAkkOXZurJ3NM=
 github.com/magefile/mage v1.15.0 h1:BvGheCMAsG3bWUDbZ8AyXXpCNwU9u5CB6sM+HNb9HYg=
 github.com/magefile/mage v1.15.0/go.mod h1:z5UZb/iS3GoOSn0JgWuiw7dxlurVYTu+/jHXqQg881A=
 github.com/matryer/is v1.4.1 h1:55ehd8zaGABKLXQUe2awZ99BD/PTc2ls+KV/dXphgEQ=
@@ -20,6 +22,8 @@ github.com/mozey/config v0.16.0 h1:Hve9+pnzKzkDb+Lr0LBLgKAqPItpaHEVE+bPf7aFWDM=
 github.com/mozey/config v0.16.0/go.mod h1:9i7Ev0rWTd30NbVmxnlg0Yg4DifPvDvCveUt39ouqes=
 github.com/mozey/errors v0.1.0 h1:4l0JnGxMfCEvjkbpLzYZL6x/wB/nSS4tvqAukOQ9hF8=
 github.com/mozey/errors v0.1.0/go.mod h1:xXktTJ15pTUz6cqpnQapGs65BxKopOyP0cxuLzvV+OY=
+github.com/mozey/ft v1.1.2 h1:YiSQD2H+5n8CC2KexTIlHXVFwFCk6/r65hbwq5naNL0=
+github.com/mozey/ft v1.1.2/go.mod h1:hDAhemMsCawViWtgTB2YZRheJEJjcx3JTyH1pgdiDEE=
 github.com/mozey/logutil v0.2.0 h1:KyiWe4xjYRuRh1vCA6LAfg2nJCQkydjR2SLX3PfuGEU=
 github.com/mozey/logutil v0.2.0/go.mod h1:4rTh4exS/DDt+79GGkvXU5/Hs7zWrFTMBi+pCgg8INk=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=

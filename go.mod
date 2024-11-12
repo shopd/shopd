@@ -12,9 +12,11 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/guregu/null v4.0.0+incompatible // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mozey/config v0.16.0 // indirect
+	github.com/mozey/ft v1.1.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/zerolog v1.33.0 // indirect
 	golang.org/x/sys v0.23.0 // indirect
