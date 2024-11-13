@@ -440,11 +440,10 @@ create table user (
 	-- registering the same email for the second time?
 	username text not null default '',
 	-- descr in short.
-	-- Used as a label (instead of email) when displaying users if not empty
+	-- Used as a label when displaying users, 
+	-- instead of email if not empty
 	descr text not null default '',
 	-- role for this user, e.g. "admin" or "customer"
-	-- Bulk import (upsert) on this table is allowed,
-	-- but not for "admin" users?
 	role text not null default 'customer',
 	-- verified timestamp is not set for new users,
 	-- it is set the first time a user verifies, and then remains set
@@ -590,12 +589,6 @@ create table role_perm (
 	-- TODO Trigger for perm but not path?
 ) strict;
 
--- .............................................................................
---
-
--- TODO Create a msg domain model,
--- to start just send email in the request handler.
--- Then refactor to buffer to NATS later
 
 -- .............................................................................
 --
@@ -784,8 +777,8 @@ create table tran (
 	tran_id text primary key,
 	-- account_id is empty if not applicable
 	account_id text not null,
-	-- state indicated if the tran was successful, see comments on
-	-- other state machines in go/hooks/README/OrderState.png
+	-- state indicated if the tran was successful, 
+	-- see comments in OrderState.png (state machine diagram)
 	state text not null,
 	descr text not null,
 	-- amount in the smallest possible unit, e.g. cents
@@ -803,7 +796,7 @@ create table tran (
 create index tran_mod_idx on tran(mod);
 
 -- tran_config meta table, e.g.
--- "method=cash", "method=card", "processor=stripe", "ref=foo"
+-- "method=cash", "method=card", "processor=stripe", "ref=message"
 create table tran_config (
 	tran_id text not null,
 	term text not null,
@@ -831,8 +824,7 @@ create index tran_tag_tag_idx on tran_tag(tag);
 -- TODO account might be overkill for now,
 -- but create it now for future reference.
 -- In the meantime tran table is good enough?
--- All accounts in here are for users with customer role,
--- hosted site subscriptions are accounts in a back office store?
+-- All accounts in here are for users with customer role
 create table account (
 	account_id text primary key,
 	descr text not null
