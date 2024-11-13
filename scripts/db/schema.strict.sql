@@ -1,20 +1,14 @@
+-- See naming conventions in scripts/db/README.md
+
 -- KSUID is used to generated key sortable unique IDs
 -- https://github.com/segmentio/ksuid
-
--- TODO Consider this article by the ksuid author
+-- Consider this article by the ksuid author
 -- "if you don’t need to generate unique identifiers
 -- in a distributed, stateless fashion, you don’t need UUIDs"
 -- https://rbranson.medium.com/why-you-should-avoid-uuids-f3e2936d6ed3
 -- However, using the same ID generator everywhere makes sense,
 -- and it might be useful for synchronizing data
 
--- TODO SQLite function to convert KSUID timestamp to ISO-8601 string?
--- This would be useful for displaying the mod column when doing CLI queries
--- TODO SQLite function to generate KSUID timestamps,
--- useful for default value for the mod col
-
--- See naming conventions in scripts/db/README.md
---
 -- .............................................................................
 --
 -- config is for global settings
@@ -72,17 +66,13 @@ create table addrtype (
 
 -- .............................................................................
 --
--- TODO Does it make sense to share tags between, e.g. cat and order, tables?
 -- tag is a lookup table for tags.
 -- Applicable to tables that have a corresponding tag meta table
 create table tag (
 	-- tag is not intended for long strings, e.g. partial HTML or markdown.
 	-- Tags may not contain white space, use config table if that is required
-	-- TODO Enable full indexing?
 	tag text primary key,
 	-- mod is useful for querying "most recent tags"
-	-- mod text not null default (strftime('%Y-%m-%d %H:%M:%f', 'now'))
-	-- mod text not null default (ksuid())
 	mod text not null check (mod <> '')
 ) strict;
 
@@ -102,7 +92,7 @@ create index tag_mod_idx on tag(mod);
 create table taxonomy (
 	-- taxonomy is the unique name
 	taxonomy text primary key,
-	-- descr in short, what is it, not why or when
+	-- descr in short
 	descr text not null,
 	mod text not null check (mod <> '')
 ) strict;
@@ -137,26 +127,12 @@ create table term (
 	-- for use in config meta data tables.
 	-- May prefix taxonomy if required to make the term unique
 	term text primary key,
-	-- descr in short, what is it, not why or when
+	-- descr in short
 	descr text not null,
 	mod text not null check (mod <> '')
 ) strict;
 
 create index term_mod_idx on term(mod);
-
--- TODO Remove this trigger, unnecessarily verbose.
--- Leave the decision to prefix up to the user,
--- maybe only use it for specific terms like "address*",
--- but it must not be a requirement
--- -- term_trigger checks taxonomy is the term prefix if it's not empty
--- -- https://www.sqlite.org/lang_corefunc.html#instr
--- create trigger term_prefix_trigger before
--- insert on term begin
--- select raise(fail, 'invalid term prefix')
--- where length(new.taxonomy) > 0
--- 	and (instr(new.term, new.taxonomy) = 0
--- 	or instr(new.term, new.taxonomy) > 1);
--- end;
 
 -- taxonomy_x_term_trigger checks for valid term before inserting rows.
 -- Corresponding entry in taxonomy table is not required
@@ -270,7 +246,7 @@ create table field_opt (
 	term text not null,
 	-- val must not contain space or punctuation characters
 	val text not null,
-	-- descr in short, what is it, not why or when
+	-- descr in short
 	descr text not null,
 	primary key (term, val),
 	foreign key (term) references field(term)
@@ -293,22 +269,21 @@ create table term_tree (
 -- term_tree_taxonomy_term_idx unique index
 create unique index term_tree_term_idx on term_tree(term);
 
--- NOTE The term_template table was removed.
--- Use the filesystem instead, see www/themes/shopd/templates/README.md
--- In prod files may be bundled with the executable
 
 -- .............................................................................
 --
--- cat is a complete list of items available in this DB.
--- Not necessarily a physical product, it could also be a download or service
+-- cat is a complete list of items available in this DB
 create table cat (
-	-- sku (stock-keeping unit) is a unique code for a type or product.
-	-- Differs from a serial number, the unique identifier for a physical item.
-	-- Must not be updated after the row is created
+	-- sku (stock-keeping unit) is a unique code.
+	-- Must not be updated after the row is created,
+	-- the sku is used in URLs for the static pages.
+	-- Differs from a serial number, 
+	-- or code into an external system,
+	-- use cat_config to record additional codes
 	sku text not null,
 	-- title when displaying catalog items
 	title text not null,
-	-- descr in short, what is it, not why or when, use config for the latter
+	-- descr in short, use config for the latter
 	descr text not null,
 	-- state must be listed in cat_state.
 	-- It's useful for specifying how a catalog item may be used.
@@ -324,18 +299,10 @@ create table cat (
 	-- See comments for cat_qty and order_line tables
 	state text not null default 'stock',
 
-	-- mod is the timestamp of the last change.
-	-- Always store UTC dates in the DB.
-	-- Include milliseconds: "%f fractional seconds: SS.SSS"
-	-- https://stackoverflow.com/a/17575175/639133
 	mod text not null check (mod <> ''),
 	-- mod_id is the user_id that made the last change
 	mod_id text not null check (mod_id <> ''),
-	-- TODO Keeping this here for now for reference,
-	-- del is a timestamp
-	-- See "you might as well timestamp it"
-	-- https://github.com/shopd/shopd-proto-issues/issues/19
-	-- del integer not null check (del >= 0) default 0,
+
 	primary key (sku)
 ) strict;
 
@@ -472,7 +439,7 @@ create table user (
 	-- The option to add username is only available when
 	-- registering the same email for the second time?
 	username text not null default '',
-	-- descr in short, what is it, not why or when.
+	-- descr in short.
 	-- Used as a label (instead of email) when displaying users if not empty
 	descr text not null default '',
 	-- role for this user, e.g. "admin" or "customer"
@@ -531,7 +498,7 @@ create index user_tag_tag_idx on user_tag(tag);
 -- but tamper proof because the JWT is signed with a private key.
 -- Reads on this table are minimized since the private key is secret,
 -- i.e. invalid or expired tokens do not require db reads
--- https://github.com/shopd/shopd-proto-issues/issues/33
+-- https://github.com/shopd/shopd-issues/issues/33
 -- Each unique email and username combo has one session,
 -- the relationship between the user and session tables is one to one.
 -- To logout a user, reset the corresponding session row
@@ -659,7 +626,7 @@ create table order_tax (
 	order_id text not null,
 	-- order_line_id if applicable, otherwise empty.
 	-- For example, the tax calculation method could be "basket"
-	-- https://github.com/shopd/shopd-proto-issues/issues/70
+	-- https://github.com/shopd/shopd-issues/issues/70
 	order_line_id text not null,
 	-- fixed is set if tax was calculated as a fixed amount
 	fixed integer not null check (fixed in (0, 1)) default 0,
