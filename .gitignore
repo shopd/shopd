@@ -25,3 +25,6 @@ go.work.sum
 # env files
 .env
 .env.*.sh
+
+# Schema for sqlc (not strict)
+/scripts/db/schema.sql
