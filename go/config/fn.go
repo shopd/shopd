@@ -1,4 +1,3 @@
-
 // Code generated with https://github.com/mozey/config DO NOT EDIT
 
 package config
@@ -19,6 +18,69 @@ type Fn struct {
 // .............................................................................
 // Methods to set function input
 
+// FnDomain sets the function input to the value of APP_DOMAIN
+func (c *Config) FnDomain() *Fn {
+	fn := Fn{}
+	fn.input = c.domain
+	fn.output = ""
+	return &fn
+}
+
+// FnDomainHosts sets the function input to the value of APP_DOMAIN_HOSTS
+func (c *Config) FnDomainHosts() *Fn {
+	fn := Fn{}
+	fn.input = c.domainHosts
+	fn.output = ""
+	return &fn
+}
+
+// FnInstanceId sets the function input to the value of APP_INSTANCE_ID
+func (c *Config) FnInstanceId() *Fn {
+	fn := Fn{}
+	fn.input = c.instanceId
+	fn.output = ""
+	return &fn
+}
+
+// FnListen sets the function input to the value of APP_LISTEN
+func (c *Config) FnListen() *Fn {
+	fn := Fn{}
+	fn.input = c.listen
+	fn.output = ""
+	return &fn
+}
+
+// FnPortApi sets the function input to the value of APP_PORT_API
+func (c *Config) FnPortApi() *Fn {
+	fn := Fn{}
+	fn.input = c.portApi
+	fn.output = ""
+	return &fn
+}
+
+// FnPortCaddy sets the function input to the value of APP_PORT_CADDY
+func (c *Config) FnPortCaddy() *Fn {
+	fn := Fn{}
+	fn.input = c.portCaddy
+	fn.output = ""
+	return &fn
+}
+
+// FnTemplateDomainDir sets the function input to the value of APP_TEMPLATE_DOMAIN_DIR
+func (c *Config) FnTemplateDomainDir() *Fn {
+	fn := Fn{}
+	fn.input = c.templateDomainDir
+	fn.output = ""
+	return &fn
+}
+
+// FnAwsProfile sets the function input to the value of AWS_PROFILE
+func (c *Config) FnAwsProfile() *Fn {
+	fn := Fn{}
+	fn.input = c.awsProfile
+	fn.output = ""
+	return &fn
+}
 
 // FnDir sets the function input to the value of APP_DIR
 func (c *Config) FnDir() *Fn {
@@ -27,7 +89,6 @@ func (c *Config) FnDir() *Fn {
 	fn.output = ""
 	return &fn
 }
-
 
 // .............................................................................
 // Type conversion functions

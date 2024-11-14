@@ -14,6 +14,13 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# Caddy
+Caddyfile
+
+# Domains
+/domains/*
+!domains/example.com
+
 # Dependency directories
 vendor/
 node_modules/

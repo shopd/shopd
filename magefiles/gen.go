@@ -23,13 +23,18 @@ func ConfigGen() (err error) {
 	mg.Deps(mg.F(Dep, goCmd))
 
 	// Requires a config file to generate the helpers
-	err = EnvGen("dev", domainConfigGen)
+	env := EnvDev
+	domain := domainConfigGen
+	err = EnvGen(env, domain)
 	if err != nil {
 		return err
 	}
 
 	// Generate helper package
-	cmd := exec.Command(configu, "-generate", filepath.Join("go", "config"))
+	escapedDomainName := escapeDomain(env, domain)
+	cmd := exec.Command(configu,
+		"-env", escapedDomainName,
+		"-generate", filepath.Join("go", "config"))
 	err = printCombinedOutput(cmd)
 	if err != nil {
 		return err
@@ -66,8 +71,7 @@ func EnvGen(env, domain string) (err error) {
 	if env == EnvDev {
 		profile = "aws-local"
 		listen = "https://localhost"
-		// TODO Find unused port
-		portCaddy = ":8443"
+		portCaddy = ":8443" // TODO Find unused port
 
 	} else if env == EnvProd {
 		profile = "shopd"
@@ -81,7 +85,7 @@ func EnvGen(env, domain string) (err error) {
 	escapedDomainName := escapeDomain(env, domain)
 	envFile := filepath.Join(appDir, fmt.Sprintf(".env.%s.sh", escapedDomainName))
 	fmt.Println("envFile", envFile)
-	portAPI := ""
+	portAPI := ":8500" // TODO Find unused port
 
 	// TODO Review this
 	// Assuming macOS is used for development only,
@@ -99,7 +103,7 @@ func EnvGen(env, domain string) (err error) {
 	// TODO Parse domain settings file.
 	// Can't make use of ExecTemplateDomainDir here
 	settings := map[string]any{
-		"Domain": "",
+		"Domain": domainConfigGen,
 		"Hosts":  "",
 	}
 
@@ -130,7 +134,7 @@ func EnvGen(env, domain string) (err error) {
 		"Settings": settings,
 		"Templates": map[string]any{
 			"AwsCreds":        "# AwsCreds",
-			"ConfigTemplates": "# ConfigTemplates",
+			"ConfigTemplates": envConfigTemplatesTemplate,
 			"Deps":            "# Deps",
 			"Email":           "# Email",
 			"Ext":             "# Ext",
@@ -159,6 +163,9 @@ const envPortsTemplate = `# Caddy is used as an API Gateway,
 # and proxies requests to /api to this port
 APP_PORT_API="{{.API}}"
 APP_PORT_CADDY="{{.Caddy}}"`
+
+const envConfigTemplatesTemplate = `# Config templates
+APP_TEMPLATE_DOMAIN_DIR="{{.Dir}}/domains/{{.Domain}}"`
 
 const envTemplate = `# Code generated with https://github.com/shopd/shopd
 
