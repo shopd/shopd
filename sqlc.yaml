@@ -1,0 +1,29 @@
+# https://docs.sqlc.dev/en/stable/reference/config.html#configuration
+version: "2"
+sql:
+    - schema: "scripts/db/schema.sql"
+      queries: "go/db/sqlite"
+      engine: "sqlite"
+      gen:
+          go:
+              package: "sqlite"
+              out: "go/db/sqlite"
+              emit_db_tags: true
+              emit_interface: true
+              emit_exact_table_names: true # Don't remove pluralization
+              emit_empty_slices: true
+              # JSON properties must use GO naming convention
+              # emit_json_tags: true
+              rename:
+                  sku: SKU
+              # Overriding types
+              # https://docs.sqlc.dev/en/latest/howto/overrides.html
+              overrides:
+                  - column: "taxonomy_x_term.taxonomy"
+                    go_type:
+                        import: "github.com/mozey/ft"
+                        type: "NString"
+                  - column: "taxonomy_x_term.term"
+                    go_type:
+                        import: "github.com/mozey/ft"
+                        type: "NString"

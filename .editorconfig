@@ -1,0 +1,29 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+# Matches multiple files with brace expansion notation
+[*.{ts,go,js,html,sh,svelte}]
+# Set default charset
+charset = utf-8
+indent_style = tab
+indent_size = 2
+
+# These file types generally have less nesting, 
+# therefore increase the indent size accordingly
+[*.{md,css,sql,json,jsonc,yaml}]
+charset = utf-8
+indent_style = tab
+indent_size = 4
+
+# Tabs are not allowed in YAML files
+[*.{yaml}]
+charset = utf-8
+indent_style = space
+indent_size = 4
