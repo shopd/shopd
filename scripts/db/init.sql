@@ -3,7 +3,6 @@
 -- https://sqlite.org/foreignkeys.html
 -- Foreign keys are not used (by the app) to enforce relationships,
 -- however, they are included in the schema for diagram visualization
--- https://github.com/shopd/ik#db
 pragma foreign_keys = off;
 
 insert into taxonomy(taxonomy, descr, mod) values
