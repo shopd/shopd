@@ -35,3 +35,8 @@ go.work.sum
 
 # Schema for sqlc (not strict)
 /scripts/db/schema.sql
+
+# build vs dist vs assets (e.g. hugo static dir)
+# https://g.co/gemini/share/aad09e89315e
+www/build
+www/dist

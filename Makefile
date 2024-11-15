@@ -1,36 +1,51 @@
-# run templ generation in watch mode to detect all .templ files and 
-# re-create _templ.txt files on change, then send reload event to browser. 
-# Default url: http://localhost:7331
-live/templ:
-	templ generate --watch --proxy="http://localhost:8080" --open-browser=false -v
+# Live reload with other tools
+# - Tailwind CSS for generating a css bundle
+# - esbuild for bundling JavaScript or TypeScript
+# - air for re-building Go source, sending a reload event to the templ proxy
+# https://templ.guide/commands-and-tools/live-reload-with-other-tools/#setting-up-the-makefile
 
-# run air to detect any go file changes to re-build and re-run the server.
-live/server:
+# watch templ detects changes to .templ files 
+# and re-creates _templ.go files,
+# then send reload event to browser.
+# Default url: http://localhost:7331
+watch/templ:
+	templ generate -v --watch \
+	--proxy="http://localhost:8080" \
+	--open-browser=false
+
+# watch shopd detects go file changes to re-build and re-run the server
+watch/server:
 	go run github.com/cosmtrek/air@v1.51.0 \
-	--build.cmd "go build -o tmp/bin/main" --build.bin "tmp/bin/main" --build.delay "100" \
+	--build.cmd "go build -o www/build/shopd ./cmd/shopd/..." \
+	--build.bin "www/build/shopd run" \
+	--build.delay "100" \
 	--build.exclude_dir "node_modules" \
+	--build.exclude_dir "vendor" \
 	--build.include_ext "go" \
 	--build.stop_on_error "false" \
 	--misc.clean_on_exit true
 
-# run tailwindcss to generate the styles.css bundle in watch mode.
-live/tailwind:
-	pnpx --yes tailwindcss -i ./input.css -o ./assets/styles.css --minify --watch
+# watch tailwind generates the app.css bundle
+watch/tailwind:
+	pnpx tailwindcss -i ./src/app.css -o ./www/build/app.css \
+	--minify --watch
 
-# run esbuild to generate the index.js bundle in watch mode.
-live/esbuild:
-	pnpx --yes esbuild js/index.ts --bundle --outdir=assets/ --watch
+# watch esbuild generates the app.js bundle
+watch/esbuild:
+	pnpx esbuild src/app.ts --bundle --outdir=www/build/ \
+	--watch
 
-# watch for any js or css change in the assets/ folder, then reload the browser via templ proxy.
-live/sync_assets:
+# watch sync detects changes in the build folder, 
+# then reloads the browser via templ proxy
+watch/sync:
 	go run github.com/cosmtrek/air@v1.51.0 \
 	--build.cmd "templ generate --notify-proxy" \
 	--build.bin "true" \
 	--build.delay "100" \
 	--build.exclude_dir "" \
-	--build.include_dir "assets" \
+	--build.include_dir "www/build" \
 	--build.include_ext "js,css"
 
-# start all 5 watch processes in parallel.
-live: 
-	make -j5 live/templ live/server live/tailwind live/esbuild live/sync_assets
+# dev runs the server with live reload
+dev: 
+	make -j5 watch/templ watch/server watch/tailwind watch/esbuild watch/sync
