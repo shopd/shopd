@@ -15,7 +15,7 @@ watch/templ:
 
 # watch shopd detects go file changes to re-build and re-run the server
 watch/server:
-	go run github.com/cosmtrek/air@v1.51.0 \
+	air \
 	--build.cmd "go build -o www/build/shopd ./cmd/shopd/..." \
 	--build.bin "www/build/shopd run" \
 	--build.delay "100" \
@@ -38,7 +38,7 @@ watch/esbuild:
 # watch sync detects changes in the build folder, 
 # then reloads the browser via templ proxy
 watch/sync:
-	go run github.com/cosmtrek/air@v1.51.0 \
+	air \
 	--build.cmd "templ generate --notify-proxy" \
 	--build.bin "true" \
 	--build.delay "100" \
