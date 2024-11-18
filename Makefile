@@ -16,7 +16,7 @@ watch/templ:
 # watch shopd detects go file changes to re-build and re-run the server
 watch/server:
 	air \
-	--build.cmd "go build -o www/build/shopd ./cmd/shopd/..." \
+	--build.cmd "go build -o www/build/shopd ./cmd/shopd/main.go" \
 	--build.bin "www/build/shopd run" \
 	--build.delay "100" \
 	--build.exclude_dir "node_modules" \
