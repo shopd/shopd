@@ -5,12 +5,12 @@
 # https://templ.guide/commands-and-tools/live-reload-with-other-tools/#setting-up-the-makefile
 
 # watch site uses templ to detect changes to .templ files 
-# re-creates _templ.go files,
+# creates _templ.txt files (to reduce Go code to be re-generated),
 # and sends the reload event to the browser
 # Default url: http://localhost:7331
 watch/site:
 	templ generate -v --watch \
-	--proxy="http://localhost:8080" \
+	--proxy="http://localhost:8443" \
 	--open-browser=false
 
 # watch shopd detects go file changes to re-build and re-run the server
@@ -46,6 +46,10 @@ watch/sync:
 	--build.include_dir "www/build" \
 	--build.include_ext "js,css"
 
+caddy:
+	caddy run
+
 # dev runs the server with live reload
+# make -j6 caddy watch/site watch/shopd watch/css watch/app watch/sync
 dev: 
-	make -j5 watch/site watch/shopd watch/css watch/app watch/sync
+	make -j2 caddy watch/shopd
