@@ -4,17 +4,17 @@
 # - air for re-building Go source, sending a reload event to the templ proxy
 # https://templ.guide/commands-and-tools/live-reload-with-other-tools/#setting-up-the-makefile
 
-# watch templ detects changes to .templ files 
-# and re-creates _templ.go files,
-# then send reload event to browser.
+# watch site uses templ to detect changes to .templ files 
+# re-creates _templ.go files,
+# and sends the reload event to the browser
 # Default url: http://localhost:7331
-watch/templ:
+watch/site:
 	templ generate -v --watch \
 	--proxy="http://localhost:8080" \
 	--open-browser=false
 
 # watch shopd detects go file changes to re-build and re-run the server
-watch/server:
+watch/shopd:
 	air \
 	--build.cmd "go build -o www/build/shopd ./cmd/shopd/main.go" \
 	--build.bin "www/build/shopd run" \
@@ -25,13 +25,13 @@ watch/server:
 	--build.stop_on_error "false" \
 	--misc.clean_on_exit true
 
-# watch tailwind generates the app.css bundle
-watch/tailwind:
+# watch css uses tailwind generates the app.css bundle
+watch/css:
 	pnpx tailwindcss -i ./src/app.css -o ./www/build/app.css \
 	--minify --watch
 
-# watch esbuild generates the app.js bundle
-watch/esbuild:
+# watch app uses esbuild generates the app.js bundle
+watch/app:
 	pnpx esbuild src/app.ts --bundle --outdir=www/build/ \
 	--watch
 
@@ -48,4 +48,4 @@ watch/sync:
 
 # dev runs the server with live reload
 dev: 
-	make -j5 watch/templ watch/server watch/tailwind watch/esbuild watch/sync
+	make -j5 watch/site watch/shopd watch/css watch/app watch/sync
