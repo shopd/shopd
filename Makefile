@@ -4,14 +4,13 @@
 # - air for re-building Go source, sending a reload event to the templ proxy
 # https://templ.guide/commands-and-tools/live-reload-with-other-tools/#setting-up-the-makefile
 
-# dev/site uses templ to detect changes to .templ files 
-# creates _templ.txt files (to reduce Go code to be re-generated),
-# and sends the reload event to the browser
-# Default url: http://localhost:7331
+# dev/site generates _templ.txt with watch mode
+# https://github.com/a-h/templ/pull/366
+# Don't use the live reload proxy, rather make make app.js poll /api 
+# and reload the page on if the build timestamp changed
+# https://templ.guide/commands-and-tools/live-reload
 dev/site:
-	templ generate -v --watch \
-	--proxy="http://localhost:8443" \
-	--open-browser=false
+	templ generate -v --watch --path www/content
 
 # dev/shopd detects go file changes to re-build and re-run the server
 dev/shopd:
@@ -46,6 +45,12 @@ dev/sync:
 	--build.include_dir "www/build" \
 	--build.include_ext "js,css"
 
+# TODO Don't serve static files in dev?
+# Rather make use of templ watch mode,
+# this requires a Go backend service cmd with routes
+# corresponding to the static site paths.
+# Another cmd is then used to render static files for prod
+# https://templ.guide/static-rendering/generating-static-html-files-with-templ
 dev/caddy:
 	caddy run
 

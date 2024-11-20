@@ -1,6 +1,6 @@
-# If you prefer the allow list template instead of the deny list, see community template:
-# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
-#
+_excluded
+.DS_Store
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -20,6 +20,7 @@ Caddyfile
 # Domains
 /domains/*
 !domains/example.com
+domains/example.com/www/public
 
 # Dependency directories
 vendor/
@@ -43,3 +44,8 @@ go.work.sum
 # https://g.co/gemini/share/aad09e89315e
 www/build
 www/dist
+
+# templ generated files change depending
+# on the --watch flag being specified or not
+*_templ.go
+*_templ.txt
