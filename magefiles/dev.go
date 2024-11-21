@@ -14,6 +14,8 @@ import (
 // To avoid generating static files with test data,
 // the "sync data" cmd must be executed manually,
 // make use of the DomainGen target
+// TODO Option to not use tmux, run watchers in go routines.
+// How would logging work, one writes to stdout and the rest to files?
 func Dev() (err error) {
 	return dev()
 }
