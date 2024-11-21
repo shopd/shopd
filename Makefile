@@ -60,3 +60,6 @@ dev/caddy:
 # make -j6 dev/caddy dev/site dev/shopd dev/css dev/app dev/sync
 dev: 
 	make -j2 dev/caddy dev/shopd
+
+# TODO Rather use magefiles for everything,
+# instead of using both a Makefile and magefiles?
