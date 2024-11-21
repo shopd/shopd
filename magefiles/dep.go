@@ -55,6 +55,7 @@ func DetectOS() (err error) {
 }
 
 const (
+	air     = "air"
 	configu = "configu"
 	find    = "find"
 	goCmd   = "go"
@@ -64,6 +65,12 @@ const (
 // Dep checks for programs used with mage
 func Dep(cmd string) error {
 	switch cmd {
+	case air:
+		err := exec.Command("air", "-v").Run()
+		if err != nil {
+			// cd ~ && go install github.com/air-verse/air@v1.61.1
+			return errors.WithStack(ErrDep("https://github.com/air-verse/air"))
+		}
 	case configu:
 		err := exec.Command("configu", "--help").Run()
 		if err != nil {
