@@ -18,7 +18,9 @@ conf dev-example-com
 mage CaddyfileGenDev
 ```
 
-Static file server
+Run dev
 ```bash
-caddy run
+mage dev
 ```
+
+[Preview on localhost](https://localhost:8443)
