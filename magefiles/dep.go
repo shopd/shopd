@@ -56,10 +56,13 @@ func DetectOS() (err error) {
 
 const (
 	air     = "air"
+	caddy   = "caddy"
 	configu = "configu"
 	find    = "find"
 	goCmd   = "go"
+	mage    = "mage"
 	sqlc    = "sqlc"
+	tmux    = "tmux"
 )
 
 // Dep checks for programs used with mage
@@ -70,6 +73,13 @@ func Dep(cmd string) error {
 		if err != nil {
 			// cd ~ && go install github.com/air-verse/air@v1.61.1
 			return errors.WithStack(ErrDep("https://github.com/air-verse/air"))
+		}
+	case caddy:
+		err := exec.Command("caddy", "version").Run()
+		if err != nil {
+			// Caddy also requires Network Security Services
+			// brew install nss
+			return errors.WithStack(ErrDep("https://formulae.brew.sh/formula/caddy"))
 		}
 	case configu:
 		err := exec.Command("configu", "--help").Run()
@@ -90,6 +100,11 @@ func Dep(cmd string) error {
 		err := exec.Command("sqlc", "version").Run()
 		if err != nil {
 			return errors.WithStack(ErrDep("https://formulae.brew.sh/formula/sqlc"))
+		}
+	case tmux:
+		err := exec.Command("tmux", "-V").Run()
+		if err != nil {
+			return errors.WithStack(ErrDep("https://formulae.brew.sh/formula/tmux"))
 		}
 	default:
 		return errors.WithStack(ErrDepCmd(cmd))
