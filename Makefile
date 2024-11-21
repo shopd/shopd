@@ -15,8 +15,8 @@ dev/site:
 # dev/shopd detects go file changes to re-build and re-run the server
 dev/shopd:
 	air \
-	--build.cmd "go build -o www/build/shopd ./cmd/shopd/main.go" \
-	--build.bin "www/build/shopd run" \
+	--build.cmd "go build -o build/shopd ./cmd/shopd/main.go" \
+	--build.bin "build/shopd run" \
 	--build.delay "100" \
 	--build.exclude_dir "node_modules" \
 	--build.exclude_dir "vendor" \
@@ -24,25 +24,27 @@ dev/shopd:
 	--build.stop_on_error "false" \
 	--misc.clean_on_exit true
 
+# TODO Don't minify for dev
 # dev/css uses tailwind generates the app.css bundle
 dev/css:
-	pnpx tailwindcss -i ./src/app.css -o ./www/build/app.css \
+	pnpx tailwindcss -i ./src/app.css -o ./build/app.css \
 	--minify --watch
 
 # dev/app uses esbuild generates the app.js bundle
 dev/app:
-	pnpx esbuild src/app.ts --bundle --outdir=www/build/ \
+	pnpx esbuild src/app.ts --bundle --outdir=build/ \
 	--watch
 
+# TODO Create sync dev cmd?
 # dev/sync detects changes in the build folder, 
 # then reloads the browser via templ proxy
 dev/sync:
 	air \
-	--build.cmd "templ generate --notify-proxy" \
+	--build.cmd "go run ./cmd/shopd/main.go sync dev" \
 	--build.bin "true" \
 	--build.delay "100" \
 	--build.exclude_dir "" \
-	--build.include_dir "www/build" \
+	--build.include_dir "build" \
 	--build.include_ext "js,css"
 
 # TODO Don't serve static files in dev?

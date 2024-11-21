@@ -40,10 +40,12 @@ go.work.sum
 # air
 /tmp
 
-# build vs dist vs assets (e.g. hugo static dir)
-# https://g.co/gemini/share/aad09e89315e
-www/build
-www/dist
+# build is for dev artifacts
+/build
+# dist is for deployment artifacts
+/dist
+# TODO www/assets and static dirs with same meaning as used with Hugo?
+# https://g.co/gemini/share/ab6c57836a43
 
 # templ generated files change depending
 # on the --watch flag being specified or not
