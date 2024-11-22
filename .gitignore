@@ -51,3 +51,6 @@ go.work.sum
 # on the --watch flag being specified or not
 *_templ.go
 *_templ.txt
+
+# magefiles
+magefiles/mage
