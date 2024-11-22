@@ -14,8 +14,6 @@ import (
 // To avoid generating static files with test data,
 // the "sync data" cmd must be executed manually,
 // make use of the DomainGen target
-// TODO Option to not use tmux, run watchers in go routines.
-// How would logging work, one writes to stdout and the rest to files?
 func Dev() (err error) {
 	return dev()
 }
@@ -45,13 +43,13 @@ func dev() (err error) {
 		return errors.WithStack(err)
 	}
 
-	// TODO Build all dev artifacts.
+	// Build all dev artefacts.
 	// Do not call Clean here, otherwise cmd.SyncData has to run
 	// each time the dev server is started, that would be slow
-	// err = BuildDev()
-	// if err != nil {
-	// 	return err
-	// }
+	err = BuildDev()
+	if err != nil {
+		return err
+	}
 
 	// ...........................................................................
 	// Create tmux session

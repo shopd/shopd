@@ -59,6 +59,7 @@ const (
 	caddy   = "caddy"
 	configu = "configu"
 	find    = "find"
+	git     = "git"
 	goCmd   = "go"
 	mage    = "mage"
 	sqlc    = "sqlc"
@@ -90,6 +91,11 @@ func Dep(cmd string) error {
 		err := exec.Command("find", ".", "-quit").Run()
 		if err != nil {
 			return errors.WithStack(ErrDep("find"))
+		}
+	case git:
+		err := exec.Command("git", "version").Run()
+		if err != nil {
+			return errors.WithStack(ErrDep("https://git-scm.com/"))
 		}
 	case goCmd:
 		err := exec.Command("go", "version").Run()
