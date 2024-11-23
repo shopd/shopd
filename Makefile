@@ -9,8 +9,8 @@
 # Don't use the live reload proxy, rather make make app.js poll /api 
 # and reload the page on if the build timestamp changed
 # https://templ.guide/commands-and-tools/live-reload
-dev/site:
-	templ generate -v --watch --path www/content
+# dev/site:
+# 	templ generate -v --watch --path www/content --cmd "date"
 
 # dev/shopd detects go file changes to re-build and re-run the server
 dev/shopd:

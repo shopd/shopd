@@ -7,6 +7,7 @@ import (
 
 	"github.com/magefile/mage/mg"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"github.com/shopd/shopd/go/fileutil"
 )
 
@@ -83,10 +84,15 @@ func dev() (err error) {
 	if err != nil {
 		return err
 	}
+	// TODO Remove this?
 	// err = devSite(txSession(EnvDev))
 	// if err != nil {
 	// 	return err
 	// }
+	err = devTempl(txSession(EnvDev))
+	if err != nil {
+		return err
+	}
 
 	// TODO ...tailwind changes
 	err = tmuxSplitWindow(txSession(EnvDev), txVertical)
@@ -144,3 +150,84 @@ func dev() (err error) {
 
 	return nil
 }
+
+// TODO Remove this?
+// // devSite runs WatchSite in a tmux session
+// func devSite(session string) (err error) {
+// 	mg.Deps(mg.F(Dep, tmux))
+
+// 	log.Info().Msg("Static site helper live-reload watcher...")
+// 	cmd, err := mageCmd(taskWatchSite)
+// 	if err != nil {
+// 		return errors.WithStack(err)
+// 	}
+// 	err = tmuxSendCmd(session, cmd)
+// 	if err != nil {
+// 		return errors.WithStack(err)
+// 	}
+
+// 	return nil
+// }
+
+// devTempl runs a watcher for the templ files in a tmux session.
+// The --watch flag makes templ generate *_templ.txt files.
+// The HTML is read from the txt files as a dev optimisation,
+// instead of being embedded in the *_templ.go files
+// https://github.com/a-h/templ/pull/366
+func devTempl(session string) (err error) {
+	mg.Deps(mg.F(Dep, tmux))
+	mg.Deps(mg.F(Dep, templ))
+
+	log.Info().Msg("Templ live-reload watcher...")
+
+	staticGenCmd := fmt.Sprintf("go run %s/... static gen --env dev",
+		filepath.Join(conf.Dir(), "cmd", "shopd"))
+
+	cmd := fmt.Sprintf("%s generate -v --watch --path %s --cmd \"%s\"",
+		templ,
+		filepath.Join(conf.Dir(), "www"),
+		staticGenCmd)
+
+	err = tmuxSendCmd(session, cmd)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+// TODO Remove this?
+// // WatchSite rebuilds and static site helper
+// func WatchSite() (err error) {
+// 	w, err := watcher.NewWatcher(watcher.WatcherParams{
+// 		Change: func(p string) {
+// 			envMap, err := versionEnv()
+// 			if err != nil {
+// 				log.Error().Stack().Err(err).Msg("")
+// 				return
+// 			}
+
+// 			log.Info().Str("path", p).Msg("WatchSite")
+
+// 			err = buildSite(EnvDev, envMap, false)
+// 			if err != nil {
+// 				log.Error().Stack().Err(err).Msg("")
+// 				return
+// 			}
+// 		},
+// 		DelayMS: 0, // Using default delay
+// 		IncludePaths: []string{
+// 			filepath.Join(conf.Dir(), "www", "components"),
+// 			filepath.Join(conf.Dir(), "www", "content"),
+// 			// TODO Domain can override?
+// 			// filepath.Join(conf.ExecTemplateDomainDir(), "www", "content"),
+// 		},
+// 		ExcludePaths:   []string{".*public.*"},
+// 		ExcludeChanges: []string{".*hugo_build.lock$"},
+// 	})
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return w.Run()
+// }

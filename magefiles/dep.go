@@ -63,6 +63,7 @@ const (
 	goCmd   = "go"
 	mage    = "mage"
 	sqlc    = "sqlc"
+	templ   = "templ"
 	tmux    = "tmux"
 )
 
@@ -106,6 +107,11 @@ func Dep(cmd string) error {
 		err := exec.Command("sqlc", "version").Run()
 		if err != nil {
 			return errors.WithStack(ErrDep("https://formulae.brew.sh/formula/sqlc"))
+		}
+	case templ:
+		err := exec.Command("templ", "version").Run()
+		if err != nil {
+			return errors.WithStack(ErrDep("https://templ.guide/quick-start/installation"))
 		}
 	case tmux:
 		err := exec.Command("tmux", "-V").Run()
