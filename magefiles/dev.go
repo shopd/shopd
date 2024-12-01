@@ -169,6 +169,23 @@ func dev() (err error) {
 // 	return nil
 // }
 
+func templStaticGenCmd() string {
+	staticGenCmd := fmt.Sprintf("go run %s/... static gen --env dev",
+		filepath.Join(conf.Dir(), "cmd", "shopd"))
+
+	cmd := fmt.Sprintf("%s generate -v --watch --path %s --cmd \"%s\"",
+		templ,
+		filepath.Join(conf.Dir(), "www"),
+		staticGenCmd)
+
+	return cmd
+}
+
+// TODO Remove this, see README.md
+func DebugTemplStaticGen() {
+	fmt.Println(templStaticGenCmd())
+}
+
 // devTempl runs a watcher for the templ files in a tmux session.
 // The --watch flag makes templ generate *_templ.txt files.
 // The HTML is read from the txt files as a dev optimisation,
@@ -180,15 +197,7 @@ func devTempl(session string) (err error) {
 
 	log.Info().Msg("Templ live-reload watcher...")
 
-	staticGenCmd := fmt.Sprintf("go run %s/... static gen --env dev",
-		filepath.Join(conf.Dir(), "cmd", "shopd"))
-
-	cmd := fmt.Sprintf("%s generate -v --watch --path %s --cmd \"%s\"",
-		templ,
-		filepath.Join(conf.Dir(), "www"),
-		staticGenCmd)
-
-	err = tmuxSendCmd(session, cmd)
+	err = tmuxSendCmd(session, templStaticGenCmd())
 	if err != nil {
 		return errors.WithStack(err)
 	}
