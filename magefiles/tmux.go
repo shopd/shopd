@@ -8,6 +8,7 @@ import (
 	"github.com/magefile/mage/mg"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"github.com/shopd/shopd/go/share"
 )
 
 const enter = "ENTER"
@@ -175,7 +176,7 @@ func Down(env string) (err error) {
 
 	// Don't stop Caddy on prod server,
 	// other domains might be hosted on the same server
-	if env == EnvProd {
+	if env == share.EnvProd {
 		// TODO Delete caddy config for domain
 		// err = CaddyDelete()
 		// if err != nil {

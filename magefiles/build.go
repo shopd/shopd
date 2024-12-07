@@ -14,11 +14,6 @@ import (
 	"github.com/shopd/shopd/go/share"
 )
 
-const (
-	EnvDev  = "dev"
-	EnvProd = "prod"
-)
-
 // Env vars starting with SHOPD_* are passed to sub-commands inline,
 // these are not set in the parent shell or the config files
 const (
@@ -130,17 +125,17 @@ func BuildDev() (err error) {
 	}
 
 	// Static site
-	err = buildSite(EnvDev, envMap, true)
+	err = buildSite(share.EnvDev, envMap, true)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	// App artefacts
-	err = BuildApp(EnvDev)
+	err = BuildApp(share.EnvDev)
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	err = BuildTailwind(EnvDev)
+	err = BuildTailwind(share.EnvDev)
 	if err != nil {
 		return errors.WithStack(err)
 	}
