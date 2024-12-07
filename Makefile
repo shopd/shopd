@@ -9,8 +9,8 @@
 # Don't use the live reload proxy, rather make make app.js poll /api 
 # and reload the page on if the build timestamp changed
 # https://templ.guide/commands-and-tools/live-reload
-dev/site:
-	templ generate -v --watch --path www/content
+# dev/site:
+# 	templ generate -v --watch --path www/content --cmd "date"
 
 # dev/shopd detects go file changes to re-build and re-run the server
 dev/shopd:
@@ -60,3 +60,6 @@ dev/caddy:
 # make -j6 dev/caddy dev/site dev/shopd dev/css dev/app dev/sync
 dev: 
 	make -j2 dev/caddy dev/shopd
+
+# TODO Rather use magefiles for everything,
+# instead of using both a Makefile and magefiles?
