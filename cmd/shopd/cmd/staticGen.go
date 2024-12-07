@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/shopd/shopd/go/config"
+	"github.com/shopd/shopd/go/fileutil"
 	"github.com/shopd/shopd/go/share"
 	"github.com/spf13/cobra"
 )
@@ -74,12 +74,10 @@ var staticGenCmd = &cobra.Command{
 			}
 		}
 
+		// API helper
 		log.Info().Str("env", env).
-			Strs("apiPaths", apiPaths).
-			Msg("Generating api helper")
-		//  TODO Generate go/templ/api_templ.go
-		// for paths starting with "/api"
-		t, err := template.New("apiTemplTemplate").Parse(apiTemplTemplate)
+			Strs("apiPaths", apiPaths).Msg("Generating api helper")
+		t, err := template.New("apiTemplate").Parse(apiTemplate)
 		if err != nil {
 			log.Error().Stack().Err(err).Msg("")
 			os.Exit(1)
@@ -92,22 +90,40 @@ var staticGenCmd = &cobra.Command{
 			log.Error().Stack().Err(err).Msg("")
 			os.Exit(1)
 		}
-		fmt.Println(buf.String())
+		fileutil.WriteBytes(
+			filepath.Join(conf.Dir(), "go", "templ", "api_templ.go"),
+			buf.Bytes())
 
+		// Static site helper
 		if env == share.EnvDev {
 			log.Info().Str("env", env).
 				Strs("contentPaths", contentPaths).
 				Msg("Generating static site helper")
-			//  TODO Generate www/static_gen.go dev service
-			// for paths starting with "/content".
-			// Caddy forwards static site requests to this service
+			t, err := template.New("contentTemplate").Parse(contentTemplate)
+			if err != nil {
+				log.Error().Stack().Err(err).Msg("")
+				os.Exit(1)
+			}
+			buf := bytes.Buffer{}
+			err = t.Execute(&buf, map[string]any{
+				"Paths": contentPaths,
+			})
+			if err != nil {
+				log.Error().Stack().Err(err).Msg("")
+				os.Exit(1)
+			}
+			fileutil.WriteBytes(
+				filepath.Join(conf.Dir(), "go", "templ", "static_templ.go"),
+				buf.Bytes())
 
 		} else {
+			// Static site
 			log.Info().Str("env", env).
 				Strs("contentPaths", contentPaths).
 				Msg("Generating static site")
-			// TODO Generate static site files in www/public.
-			// Copy contents of www/static to www/public
+			// TODO Generate www/public.
+			// Copy contents of www/static to www/public.
+			// Copy additional domain specific static content and overrides
 		}
 
 		os.Exit(0)
@@ -120,7 +136,14 @@ func init() {
 	staticGenCmd.MarkFlagRequired(FlagEnv)
 }
 
-const apiTemplTemplate = `
+const apiTemplate = `
+package templ
+{{range .Paths}}
+// {{.}}
+{{end}}
+`
+
+const contentTemplate = `
 package templ
 {{range .Paths}}
 // {{.}}
