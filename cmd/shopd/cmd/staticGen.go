@@ -91,7 +91,7 @@ var staticGenCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		fileutil.WriteBytes(
-			filepath.Join(conf.Dir(), "go", "templ", "api_templ.go"),
+			filepath.Join(conf.Dir(), "go", "router", "api_templ.go"),
 			buf.Bytes())
 
 		// Static site helper
@@ -113,7 +113,7 @@ var staticGenCmd = &cobra.Command{
 				os.Exit(1)
 			}
 			fileutil.WriteBytes(
-				filepath.Join(conf.Dir(), "go", "templ", "static_templ.go"),
+				filepath.Join(conf.Dir(), "go", "router", "static_templ.go"),
 				buf.Bytes())
 
 		} else {
@@ -137,15 +137,15 @@ func init() {
 }
 
 const apiTemplate = `
-package templ
+package router
 {{range .Paths}}
-// {{.}}
+// TODO Register templ component for {{.}}
 {{end}}
 `
 
 const contentTemplate = `
-package templ
+package router
 {{range .Paths}}
-// {{.}}
+// TODO Register templ component for {{.}}
 {{end}}
 `
