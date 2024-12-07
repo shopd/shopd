@@ -7,12 +7,12 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/shopd/shopd/go/config"
+	"github.com/shopd/shopd/go/share"
 	"github.com/spf13/cobra"
 )
 
-// staticGenMatch find matches for pattern in dir
-// and returns a list of matching paths
-func staticGenMatch(dir, pattern string) (matches []string, err error) {
+// findFilePaths matches a pattern in dir and returns a list of matching paths
+func findFilePaths(dir, pattern string) (matches []string, err error) {
 	err = filepath.WalkDir(dir,
 		func(path string, d os.DirEntry, err error) error {
 			if err != nil {
@@ -42,7 +42,7 @@ func staticGenMatch(dir, pattern string) (matches []string, err error) {
 
 var staticGenCmd = &cobra.Command{
 	Use:   "gen",
-	Short: "Generate static site or helpers",
+	Short: "Generate static site and helpers",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		conf := cmd.Context().Value(config.Config{}).(*config.Config)
@@ -63,7 +63,7 @@ var staticGenCmd = &cobra.Command{
 		// Scan contents of www
 		dir := filepath.Join(conf.Dir(), "www")
 		pattern := "*_templ.go"
-		wwwMatches, err := staticGenMatch(dir, pattern)
+		wwwMatches, err := findFilePaths(dir, pattern)
 		if err != nil {
 			log.Error().Stack().Err(err).Msg("")
 			os.Exit(1)
@@ -72,19 +72,18 @@ var staticGenCmd = &cobra.Command{
 			fmt.Println(match)
 		}
 
-		// Scan go/templ
-		dir = filepath.Join(conf.Dir(), "go", "templ")
-		pattern = "*_gen.go"
-		goMatches, err := staticGenMatch(dir, pattern)
-		if err != nil {
-			log.Error().Stack().Err(err).Msg("")
-			os.Exit(1)
-		}
-		for _, match := range goMatches {
-			fmt.Println(match)
-		}
+		//  TODO Generate go/templ/api_templ.go
+		// for paths starting with "/api"
 
-		// Compare matches
+		if env == share.EnvDev {
+			//  TODO Generate www/static_gen.go dev service
+			// for paths starting with "/content".
+			// Caddy forwards static site requests to this service
+
+		} else {
+			// TODO Generate static site files in www/public.
+			// Copy contents of www/static to www/public
+		}
 
 		os.Exit(0)
 	},
