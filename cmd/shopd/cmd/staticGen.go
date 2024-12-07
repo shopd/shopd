@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 
 	"github.com/rs/zerolog/log"
 	"github.com/shopd/shopd/go/config"
@@ -71,20 +74,38 @@ var staticGenCmd = &cobra.Command{
 			}
 		}
 
-		log.Info().Str("env", env).Msg("Generating api helper")
+		log.Info().Str("env", env).
+			Strs("apiPaths", apiPaths).
+			Msg("Generating api helper")
 		//  TODO Generate go/templ/api_templ.go
 		// for paths starting with "/api"
-		log.Info().Strs("apiPaths", apiPaths).Msg("")
+		t, err := template.New("apiTemplTemplate").Parse(apiTemplTemplate)
+		if err != nil {
+			log.Error().Stack().Err(err).Msg("")
+			os.Exit(1)
+		}
+		buf := bytes.Buffer{}
+		err = t.Execute(&buf, map[string]any{
+			"Paths": apiPaths,
+		})
+		if err != nil {
+			log.Error().Stack().Err(err).Msg("")
+			os.Exit(1)
+		}
+		fmt.Println(buf.String())
 
 		if env == share.EnvDev {
-			log.Info().Str("env", env).Msg("Generating static site helper")
+			log.Info().Str("env", env).
+				Strs("contentPaths", contentPaths).
+				Msg("Generating static site helper")
 			//  TODO Generate www/static_gen.go dev service
 			// for paths starting with "/content".
 			// Caddy forwards static site requests to this service
-			log.Info().Strs("contentPaths", contentPaths).Msg("")
 
 		} else {
-			log.Info().Str("env", env).Msg("Generating static site")
+			log.Info().Str("env", env).
+				Strs("contentPaths", contentPaths).
+				Msg("Generating static site")
 			// TODO Generate static site files in www/public.
 			// Copy contents of www/static to www/public
 		}
@@ -98,3 +119,10 @@ func init() {
 	staticGenCmd.Flags().String(FlagEnv, "", "")
 	staticGenCmd.MarkFlagRequired(FlagEnv)
 }
+
+const apiTemplTemplate = `
+package templ
+{{range .Paths}}
+// {{.}}
+{{end}}
+`
