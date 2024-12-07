@@ -21,6 +21,22 @@ func (tr *TemplRegistry) RegisterStatic(route string, c templ.Component) {
 	}
 }
 
+func (tr *TemplRegistry) API(route string) (c templ.Component, err error) {
+	c, registered := tr.api[route]
+	if !registered {
+		return c, ErrRouteNotFound(route)
+	}
+	return c, nil
+}
+
+func (tr *TemplRegistry) Static(route string) (c templ.Component, err error) {
+	c, registered := tr.api[route]
+	if !registered {
+		return c, ErrRouteNotFound(route)
+	}
+	return c, nil
+}
+
 var RegisterAPI func(tr *TemplRegistry) = nil
 
 var RegisterStatic func(tr *TemplRegistry) = nil
