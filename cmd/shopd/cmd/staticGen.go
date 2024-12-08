@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -43,6 +45,37 @@ func findFilePaths(dir, pattern string) (matches []string, err error) {
 	return matches, nil
 }
 
+type templComponent struct {
+	RelPath string
+	Route   string
+	Method  string
+}
+
+const apiPrefix = "/www/api"
+const contentPrefix = "/www/content"
+
+func stripBase(relPath string) string {
+	return strings.Replace(relPath, filepath.Base(relPath), "", 1)
+}
+
+func stripTemplExt(relPath string) string {
+	return strings.Replace(filepath.Base(relPath), "_templ.go", "", 1)
+}
+
+func apiMethod(segment string) (method string, err error) {
+	switch segment {
+	case "delete":
+		return "Delete", nil
+	case "get":
+		return "Get", nil
+	case "post":
+		return "Post", nil
+	case "put":
+		return "Put", nil
+	}
+	return method, ErrNotImplemented(fmt.Sprintf("method %s", segment))
+}
+
 var staticGenCmd = &cobra.Command{
 	Use:   "gen",
 	Short: "Generate api helper and static site files",
@@ -57,8 +90,8 @@ var staticGenCmd = &cobra.Command{
 		}
 
 		// Scan contents of www
-		apiPaths := make([]string, 0)
-		contentPaths := make([]string, 0)
+		apiComponents := make([]templComponent, 0)
+		contentComponents := make([]templComponent, 0)
 		dir := filepath.Join(conf.Dir(), "www")
 		pattern := "*_templ.go"
 		wwwMatches, err := findFilePaths(dir, pattern)
@@ -67,16 +100,40 @@ var staticGenCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		for _, match := range wwwMatches {
-			if strings.Contains(match, "www/api") {
-				apiPaths = append(apiPaths, match)
-			} else if strings.Contains(match, "www/content") {
-				contentPaths = append(contentPaths, match)
+			// See comments in /www/api and /www/content/README.md
+			// on file naming conventions encoded in the logic below
+			relPath := strings.Replace(match, conf.Dir(), "", 1)
+			segment := stripTemplExt(relPath)
+
+			if strings.Contains(relPath, apiPrefix) {
+				method, err := apiMethod(segment)
+				if err != nil {
+					log.Error().Stack().Err(err).Msg("")
+					os.Exit(1)
+				}
+				apiComponents = append(apiComponents, templComponent{
+					RelPath: relPath,
+					Route: path.Join("/", "api",
+						strings.Replace(stripBase(relPath), apiPrefix, "", 1)),
+					Method: method,
+				})
+
+			} else if strings.Contains(relPath, contentPrefix) {
+				index := "index"
+				route := strings.Replace(stripBase(relPath), contentPrefix, "", 1)
+				if !strings.Contains(relPath, index) {
+					route = path.Join(route, segment)
+				}
+				contentComponents = append(contentComponents, templComponent{
+					RelPath: relPath,
+					Route:   route,
+					Method:  "Index",
+				})
 			}
 		}
 
 		// API helper
-		log.Info().Str("env", env).
-			Strs("apiPaths", apiPaths).Msg("Generating api helper")
+		log.Info().Str("env", env).Msg("Register api components")
 		t, err := template.New("apiTemplate").Parse(apiTemplate)
 		if err != nil {
 			log.Error().Stack().Err(err).Msg("")
@@ -84,7 +141,7 @@ var staticGenCmd = &cobra.Command{
 		}
 		buf := bytes.Buffer{}
 		err = t.Execute(&buf, map[string]any{
-			"Paths": apiPaths,
+			"Components": apiComponents,
 		})
 		if err != nil {
 			log.Error().Stack().Err(err).Msg("")
@@ -96,9 +153,7 @@ var staticGenCmd = &cobra.Command{
 
 		// Static site helper
 		if env == share.EnvDev {
-			log.Info().Str("env", env).
-				Strs("contentPaths", contentPaths).
-				Msg("Generating static site helper")
+			log.Info().Str("env", env).Msg("Register static site components")
 			t, err := template.New("contentTemplate").Parse(contentTemplate)
 			if err != nil {
 				log.Error().Stack().Err(err).Msg("")
@@ -106,7 +161,7 @@ var staticGenCmd = &cobra.Command{
 			}
 			buf := bytes.Buffer{}
 			err = t.Execute(&buf, map[string]any{
-				"Paths": contentPaths,
+				"Components": contentComponents,
 			})
 			if err != nil {
 				log.Error().Stack().Err(err).Msg("")
@@ -118,9 +173,7 @@ var staticGenCmd = &cobra.Command{
 
 		} else {
 			// Static site
-			log.Info().Str("env", env).
-				Strs("contentPaths", contentPaths).
-				Msg("Generating static site")
+			log.Info().Str("env", env).Msg("Generating static site")
 			// TODO Generate www/public.
 			// Copy contents of www/static to www/public.
 			// Copy additional domain specific static content and overrides
@@ -138,14 +191,34 @@ func init() {
 
 const apiTemplate = `
 package router
-{{range .Paths}}
-// TODO Register templ component for {{.}}
+
+{{range .Components}}
+// TODO Import 
+// {{.RelPath}}
+// {{.Route}}
+// {{.Method}}
 {{end}}
+
+func init() {
+{{range .Components}}
+// TODO Register component {{.}}
+{{end}}
+}
 `
 
 const contentTemplate = `
 package router
-{{range .Paths}}
-// TODO Register templ component for {{.}}
+
+{{range .Components}}
+// TODO Import 
+// {{.RelPath}}
+// {{.Route}}
+// {{.Method}}
 {{end}}
+
+func init() {
+{{range .Components}}
+// TODO Register component {{.}}
+{{end}}
+}
 `
