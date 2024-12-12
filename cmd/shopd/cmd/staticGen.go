@@ -46,24 +46,33 @@ func findFilePaths(dir, pattern string) (matches []string, err error) {
 }
 
 type templComponent struct {
-	RelPath string
-	Route   string
-	Method  string
+	FilePath    string
+	PackagePath string
+	PackageName string
+	Constructor string
+	Route       string
+	Method      string
 }
 
 const apiPrefix = "/www/api"
 const contentPrefix = "/www/content"
 
-func stripBase(relPath string) string {
-	return strings.Replace(relPath, filepath.Base(relPath), "", 1)
+// stripBase removes the last element and any trailing slashes from the path
+func stripBase(filePath string) string {
+	return strings.TrimRight(
+		strings.Replace(filePath, filepath.Base(filePath), "", 1), "/")
 }
 
-func stripTemplExt(relPath string) string {
-	return strings.Replace(filepath.Base(relPath), "_templ.go", "", 1)
+func stripTemplExt(filePath string) (packagePath, packageName, fileName string) {
+	packagePath = filepath.Dir(filePath)
+	packageName = filepath.Base(packagePath)
+	fileName = strings.Replace(filepath.Base(filePath), "_templ.go", "", 1)
+	return packagePath, packageName, fileName
 }
 
-func apiMethod(segment string) (method string, err error) {
-	switch segment {
+// apiMethod maps filename to templ component constructors
+func apiMethod(fileName string) (method string, err error) {
+	switch strings.ToLower(fileName) {
 	case "delete":
 		return "Delete", nil
 	case "get":
@@ -73,7 +82,7 @@ func apiMethod(segment string) (method string, err error) {
 	case "put":
 		return "Put", nil
 	}
-	return method, ErrNotImplemented(fmt.Sprintf("method %s", segment))
+	return method, ErrNotImplemented(fmt.Sprintf("method %s", fileName))
 }
 
 var staticGenCmd = &cobra.Command{
@@ -102,32 +111,40 @@ var staticGenCmd = &cobra.Command{
 		for _, match := range wwwMatches {
 			// See comments in /www/api and /www/content/README.md
 			// on file naming conventions encoded in the logic below
-			relPath := strings.Replace(match, conf.Dir(), "", 1)
-			segment := stripTemplExt(relPath)
+			filePath := strings.Replace(match, conf.Dir(), "", 1)
+			packagePath, packageName, fileName := stripTemplExt(filePath)
 
-			if strings.Contains(relPath, apiPrefix) {
-				method, err := apiMethod(segment)
+			if strings.Contains(filePath, apiPrefix) {
+				// api
+				templConstructor, err := apiMethod(fileName)
 				if err != nil {
 					log.Error().Stack().Err(err).Msg("")
 					os.Exit(1)
 				}
 				apiComponents = append(apiComponents, templComponent{
-					RelPath: relPath,
+					FilePath:    filePath,
+					PackagePath: packagePath,
+					PackageName: packageName,
+					Constructor: templConstructor,
 					Route: path.Join("/", "api",
-						strings.Replace(stripBase(relPath), apiPrefix, "", 1)),
-					Method: method,
+						strings.Replace(stripBase(filePath), apiPrefix, "", 1)),
+					Method: strings.ToUpper(templConstructor),
 				})
 
-			} else if strings.Contains(relPath, contentPrefix) {
+			} else if strings.Contains(filePath, contentPrefix) {
+				// content
 				index := "index"
-				route := strings.Replace(stripBase(relPath), contentPrefix, "", 1)
-				if !strings.Contains(relPath, index) {
-					route = path.Join(route, segment)
+				route := strings.Replace(stripBase(filePath), contentPrefix, "", 1)
+				if !strings.Contains(filePath, index) {
+					route = path.Join(route, fileName)
 				}
 				contentComponents = append(contentComponents, templComponent{
-					RelPath: relPath,
-					Route:   route,
-					Method:  "Index",
+					FilePath:    filePath,
+					PackagePath: packagePath,
+					PackageName: packageName,
+					Route:       route,
+					Constructor: "Index",
+					Method:      share.GET,
 				})
 			}
 		}
@@ -148,7 +165,7 @@ var staticGenCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		fileutil.WriteBytes(
-			filepath.Join(conf.Dir(), "go", "router", "api_templ.go"),
+			filepath.Join(conf.Dir(), "go", "router", "init_api_templ.go"),
 			buf.Bytes())
 
 		// Static site helper
@@ -168,7 +185,7 @@ var staticGenCmd = &cobra.Command{
 				os.Exit(1)
 			}
 			fileutil.WriteBytes(
-				filepath.Join(conf.Dir(), "go", "router", "static_templ.go"),
+				filepath.Join(conf.Dir(), "go", "router", "init_static_templ.go"),
 				buf.Bytes())
 
 		} else {
@@ -193,15 +210,17 @@ const apiTemplate = `
 package router
 
 {{range .Components}}
-// TODO Import 
-// {{.RelPath}}
-// {{.Route}}
-// {{.Method}}
+import (
+	"github.com/shopd/shopd{{.PackagePath}}"
+)
 {{end}}
 
 func init() {
 {{range .Components}}
-// TODO Register component {{.}}
+	RegisterAPI = func(tr *TemplRegistry) {
+		// {{.FilePath}}
+		tr.RegisterAPI("{{.Route}}", "{{.Method}}", {{.PackageName}}.{{.Constructor}}())
+	}
 {{end}}
 }
 `
@@ -210,15 +229,17 @@ const contentTemplate = `
 package router
 
 {{range .Components}}
-// TODO Import 
-// {{.RelPath}}
-// {{.Route}}
-// {{.Method}}
+import (
+	"github.com/shopd/shopd{{.PackagePath}}"
+)
 {{end}}
 
 func init() {
 {{range .Components}}
-// TODO Register component {{.}}
+	RegisterStatic = func(tr *TemplRegistry) {
+		// {{.FilePath}}
+		tr.RegisterAPI("{{.Route}}", "{{.Method}}", {{.PackageName}}.{{.Constructor}}())
+	}
 {{end}}
 }
 `
