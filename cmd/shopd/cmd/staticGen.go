@@ -45,9 +45,36 @@ func findFilePaths(dir, pattern string) (matches []string, err error) {
 	return matches, nil
 }
 
+type templPackages struct {
+	// m is a map of unique package paths
+	m map[string]bool
+}
+
+func (tp *templPackages) Add(p string) {
+	tp.m[p] = true
+}
+
+func (tp *templPackages) Packages() (packages []templPackage) {
+	for v := range tp.m {
+		packages = append(packages, templPackage{
+			PackagePath: v,
+		})
+	}
+	return packages
+}
+
+func NewTemplPackages() (tp *templPackages) {
+	tp = &templPackages{}
+	tp.m = make(map[string]bool)
+	return tp
+}
+
+type templPackage struct {
+	PackagePath string
+}
+
 type templComponent struct {
 	FilePath    string
-	PackagePath string
 	PackageName string
 	Constructor string
 	Route       string
@@ -98,6 +125,9 @@ var staticGenCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		apiPackages := NewTemplPackages()
+		contentPackages := NewTemplPackages()
+
 		// Scan contents of www
 		apiComponents := make([]templComponent, 0)
 		contentComponents := make([]templComponent, 0)
@@ -116,6 +146,7 @@ var staticGenCmd = &cobra.Command{
 
 			if strings.Contains(filePath, apiPrefix) {
 				// api
+				apiPackages.Add(packagePath)
 				templConstructor, err := apiMethod(fileName)
 				if err != nil {
 					log.Error().Stack().Err(err).Msg("")
@@ -123,7 +154,6 @@ var staticGenCmd = &cobra.Command{
 				}
 				apiComponents = append(apiComponents, templComponent{
 					FilePath:    filePath,
-					PackagePath: packagePath,
 					PackageName: packageName,
 					Constructor: templConstructor,
 					Route: path.Join("/", "api",
@@ -133,6 +163,7 @@ var staticGenCmd = &cobra.Command{
 
 			} else if strings.Contains(filePath, contentPrefix) {
 				// content
+				contentPackages.Add(packagePath)
 				index := "index"
 				route := strings.Replace(stripBase(filePath), contentPrefix, "", 1)
 				if !strings.Contains(filePath, index) {
@@ -140,7 +171,6 @@ var staticGenCmd = &cobra.Command{
 				}
 				contentComponents = append(contentComponents, templComponent{
 					FilePath:    filePath,
-					PackagePath: packagePath,
 					PackageName: packageName,
 					Route:       route,
 					Constructor: "Index",
@@ -158,6 +188,7 @@ var staticGenCmd = &cobra.Command{
 		}
 		buf := bytes.Buffer{}
 		err = t.Execute(&buf, map[string]any{
+			"Packages":   apiPackages.Packages(),
 			"Components": apiComponents,
 		})
 		if err != nil {
@@ -178,6 +209,7 @@ var staticGenCmd = &cobra.Command{
 			}
 			buf := bytes.Buffer{}
 			err = t.Execute(&buf, map[string]any{
+				"Packages":   contentPackages.Packages(),
 				"Components": contentComponents,
 			})
 			if err != nil {
@@ -209,30 +241,25 @@ func init() {
 const apiTemplate = `
 package router
 
-{{range .Components}}
-import (
-	"github.com/shopd/shopd{{.PackagePath}}"
+import ({{range .Packages}}
+	"github.com/shopd/shopd{{.PackagePath}}"{{end}}
 )
-{{end}}
 
 func init() {
-{{range .Components}}
 	RegisterAPI = func(tr *TemplRegistry) {
+		{{range .Components}}
 		// {{.FilePath}}
-		tr.RegisterAPI("{{.Route}}", "{{.Method}}", {{.PackageName}}.{{.Constructor}}())
+		tr.RegisterAPI("{{.Route}}", "{{.Method}}", {{.PackageName}}.{{.Constructor}}()){{end}}
 	}
-{{end}}
 }
 `
 
 const contentTemplate = `
 package router
 
-{{range .Components}}
-import (
-	"github.com/shopd/shopd{{.PackagePath}}"
+import ({{range .Packages}}
+	"github.com/shopd/shopd{{.PackagePath}}"{{end}}
 )
-{{end}}
 
 func init() {
 {{range .Components}}
