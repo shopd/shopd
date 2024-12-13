@@ -59,11 +59,11 @@ func dev() (err error) {
 		return err
 	}
 
-	// TODO Caddy gateway
-	// err = devCaddy(txSession(EnvDev))
-	// if err != nil {
-	// 	return err
-	// }
+	// Caddy gateway
+	err = devCaddy(txSession(EnvDev))
+	if err != nil {
+		return err
+	}
 
 	// Pane for shopd backend
 	err = tmuxSplitWindow(txSession(EnvDev), txVertical)
@@ -84,7 +84,7 @@ func dev() (err error) {
 	if err != nil {
 		return err
 	}
-	err = devTempl(txSession(EnvDev))
+	err = devSite(txSession(EnvDev))
 	if err != nil {
 		return err
 	}
@@ -158,18 +158,39 @@ func templWatcherCmd() string {
 	return cmd
 }
 
-// devTempl runs a watcher for the templ files in a tmux session.
+// devSite runs a watcher for the templ files in a tmux session.
 // The --watch flag makes templ generate *_templ.txt files.
 // The HTML is read from the txt files as a dev optimisation,
 // instead of being embedded in the *_templ.go files
 // https://github.com/a-h/templ/pull/366
-func devTempl(session string) (err error) {
+func devSite(session string) (err error) {
 	mg.Deps(mg.F(Dep, tmux))
 	mg.Deps(mg.F(Dep, templ))
 
 	log.Info().Msg("Templ live-reload watcher...")
 
 	err = tmuxSendCmd(session, templWatcherCmd())
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+// devCaddy runs caddy in a tmux session
+func devCaddy(session string) (err error) {
+	mg.Deps(mg.F(Dep, tmux))
+
+	log.Info().Msg("Caddy gateway...")
+
+	err = CaddyfileGenDev()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	caddyCmd := fmt.Sprintf(
+		"caddy run --config %s", filepath.Join(conf.Dir(), "Caddyfile"))
+	err = tmuxSendCmd(session, caddyCmd)
 	if err != nil {
 		return errors.WithStack(err)
 	}

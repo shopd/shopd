@@ -16,6 +16,12 @@ func NewRouter() *gin.Engine {
 		})
 	})
 
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "hello",
+		})
+	})
+
 	// TODO Zerolog Integration with Gin
 	// https://g.co/gemini/share/70fd8e96abb5
 
