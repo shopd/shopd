@@ -66,11 +66,11 @@ func dev() (err error) {
 	}
 
 	// Pane for shopd backend
-	err = tmuxSplitWindow(txSession(EnvDev), txVertical)
-	if err != nil {
-		return err
-	}
-	// Pane for shopd backend watcher
+	// err = tmuxSplitWindow(txSession(EnvDev), txVertical)
+	// if err != nil {
+	// 	return err
+	// }
+	// // Pane for shopd backend watcher
 	err = tmuxSplitWindow(fmt.Sprintf("%s:0.0", txSession(EnvDev)), txHorizontal)
 	if err != nil {
 		return err
@@ -118,7 +118,7 @@ func dev() (err error) {
 	// }
 
 	// ...........................................................................
-	// TODO Watch for shopd changes
+	// Watch for shopd changes
 	err = tmuxSelectWindow(fmt.Sprintf("%s:0", txSession(EnvDev)))
 	if err != nil {
 		return err
@@ -127,10 +127,10 @@ func dev() (err error) {
 	if err != nil {
 		return err
 	}
-	// err = devShopd(txSession(EnvDev))
-	// if err != nil {
-	// 	return err
-	// }
+	err = devShopd(txSession(EnvDev))
+	if err != nil {
+		return err
+	}
 
 	// ...........................................................................
 	// Default view
@@ -138,9 +138,38 @@ func dev() (err error) {
 	if err != nil {
 		return err
 	}
-	err = tmuxSelectPane(fmt.Sprintf("%s:0.2", txSession(EnvDev)))
+	err = tmuxSelectPane(fmt.Sprintf("%s:0.1", txSession(EnvDev)))
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func shopdWatcherCmd() string {
+	binPath := filepath.Join(conf.Dir(), "build", "bin")
+	mainPath := filepath.Join(conf.Dir(), "cmd", "shopd", "main.go")
+	return fmt.Sprintf(`%s \
+	--build.cmd "go build -o %s %s" \
+	--build.bin "%s run" \
+	--build.delay "100" \
+	--build.exclude_dir "node_modules" \
+	--build.exclude_dir "magefiles" \
+	--build.exclude_dir "vendor" \
+	--build.include_ext "go" \
+	--build.stop_on_error "false" \
+	--misc.clean_on_exit true`, air, binPath, mainPath, binPath)
+}
+
+// devShopd runs shopd in a tmux session with live reload
+func devShopd(session string) (err error) {
+	mg.Deps(mg.F(Dep, tmux))
+	mg.Deps(mg.F(Dep, air))
+
+	log.Info().Msg("Dev shopd backend live-reload watcher...")
+	err = tmuxSendCmd(session, shopdWatcherCmd())
+	if err != nil {
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -149,13 +178,10 @@ func dev() (err error) {
 // templWatcherCmd creates a command that uses the built-in templ watcher.
 // It rebuilds when templ files are changed and then calls the specified cmd
 func templWatcherCmd() string {
-
-	cmd := fmt.Sprintf("%s generate -v --watch --path %s --cmd \"%s\"",
+	return fmt.Sprintf("%s generate -v --watch --path %s --cmd \"%s\"",
 		templ,
 		filepath.Join(conf.Dir(), "www"),
 		mageCmd("BuildSite", "dev"))
-
-	return cmd
 }
 
 // devSite runs a watcher for the templ files in a tmux session.

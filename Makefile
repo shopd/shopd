@@ -19,6 +19,7 @@ dev/shopd:
 	--build.bin "build/shopd run" \
 	--build.delay "100" \
 	--build.exclude_dir "node_modules" \
+	--build.exclude_dir "magefiles" \
 	--build.exclude_dir "vendor" \
 	--build.include_ext "go" \
 	--build.stop_on_error "false" \
