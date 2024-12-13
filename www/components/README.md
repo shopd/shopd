@@ -1,3 +1,3 @@
 # www/components
 
-Re-usable component
+Re-usable components

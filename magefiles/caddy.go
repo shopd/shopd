@@ -47,10 +47,7 @@ const caddyFileTemplate = `# Code generated with https://github.com/shopd/shopd
 	# Routes on this path prefix is part of the standard API
 	reverse_proxy /api* localhost{{.PortApi}}
 
-	# Everything not listed above is handled by the static file server
-	file_server {
-		root {{.DomainDir}}/www/public
-		browse
-	}
+	# Dynamically render static site content on dev
+	reverse_proxy /* localhost{{.PortApi}}
 }
 `

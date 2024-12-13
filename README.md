@@ -15,10 +15,17 @@ Config
 ```bash
 APP_DIR=$(pwd) mage EnvGen dev example.com
 conf dev-example-com
-mage CaddyfileGenDev
+# https://github.com/mozey/config#toggling-env
 ```
 
-Static file server
+Run dev
 ```bash
-caddy run
+mage dev
+```
+
+[Preview on localhost](https://localhost:8443)
+
+Stop
+```bash
+mage down dev
 ```
