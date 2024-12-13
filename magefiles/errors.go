@@ -21,6 +21,10 @@ var ErrMageStatic = func(p string) error {
 		"missing static mage binary %s", p)
 }
 
+var ErrNotImplemented = func(msg string) error {
+	return errors.NewWithCausef(ErrMage, "not implemented %s", msg)
+}
+
 var ErrParamInvalid = func(param, value string) error {
 	msg := param
 	if value != "" {

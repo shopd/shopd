@@ -14,6 +14,11 @@ import (
 	"github.com/shopd/shopd/go/share"
 )
 
+const (
+	EnvDev  = "dev"
+	EnvProd = "prod"
+)
+
 // Env vars starting with SHOPD_* are passed to sub-commands inline,
 // these are not set in the parent shell or the config files
 const (
@@ -54,14 +59,14 @@ func buildTailwind(env, targetDir string) (err error) {
 
 // BuildSite builds the static site
 func BuildSite(
-	ctx context.Context, env string, cleanDestinationDir bool) (err error) {
+	ctx context.Context, env string) (err error) {
 
 	envMap, err := versionEnv()
 	if err != nil {
 		return err
 	}
 
-	err = buildSite(env, envMap, cleanDestinationDir)
+	err = buildSite(env, envMap)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -70,11 +75,23 @@ func BuildSite(
 }
 
 func buildSite(
-	env string, envMap []string, cleanDestinationDir bool) (err error) {
+	env string, envMap []string) (err error) {
 
-	log.Info().Str("env", env).Msg("Building static site")
+	log.Info().Str("env", env).Msg("Generate router init file for api")
+	err = TemplApiGen(env)
+	if err != nil {
+		return err
+	}
 
-	// TODO
+	if env == EnvDev {
+		log.Info().Str("env", env).Msg("Generate router init file for site content")
+		err = TemplSiteGen(env)
+		if err != nil {
+			return err
+		}
+	} else {
+		return ErrNotImplemented(fmt.Sprintf("for env %s", env))
+	}
 
 	return nil
 }
@@ -125,17 +142,17 @@ func BuildDev() (err error) {
 	}
 
 	// Static site
-	err = buildSite(share.EnvDev, envMap, true)
+	err = buildSite(EnvDev, envMap)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	// App artefacts
-	err = BuildApp(share.EnvDev)
+	err = BuildApp(EnvDev)
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	err = BuildTailwind(share.EnvDev)
+	err = BuildTailwind(EnvDev)
 	if err != nil {
 		return errors.WithStack(err)
 	}

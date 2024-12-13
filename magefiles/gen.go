@@ -23,7 +23,7 @@ func ConfigGen() (err error) {
 	mg.Deps(mg.F(Dep, goCmd))
 
 	// Requires a config file to generate the helpers
-	env := share.EnvDev
+	env := EnvDev
 	domain := domainConfigGen
 	err = EnvGen(env, domain)
 	if err != nil {
@@ -68,12 +68,12 @@ func EnvGen(env, domain string) (err error) {
 	appDir := os.Getenv(paramAppDir)
 	var profile, listen, portCaddy string
 	sample := envTemplate
-	if env == share.EnvDev {
+	if env == EnvDev {
 		profile = "aws-local"
 		listen = "https://localhost"
 		portCaddy = ":8443" // TODO Find unused port
 
-	} else if env == share.EnvProd {
+	} else if env == EnvProd {
 		profile = "shopd"
 		listen = fmt.Sprintf("https://%s", domain)
 		portCaddy = ":443"
