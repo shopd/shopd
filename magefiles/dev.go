@@ -66,8 +66,8 @@ func dev() (err error) {
 	}
 
 	// Pane for shopd backend
-	// err = tmuxSplitWindow(fmt.Sprintf("%s:0.0", txSession(EnvDev)), txVertical)
-	err = tmuxSplitWindow(fmt.Sprintf("%s:0.0", txSession(EnvDev)), txHorizontal)
+	err = tmuxSplitWindow(fmt.Sprintf("%s:0.0", txSession(EnvDev)), txVertical)
+	// err = tmuxSplitWindow(fmt.Sprintf("%s:0.0", txSession(EnvDev)), txHorizontal)
 	if err != nil {
 		return err
 	}
