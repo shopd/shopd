@@ -161,7 +161,7 @@ func shopdWatcherCmd() string {
 	--misc.clean_on_exit true`, air, binPath, mainPath, binPath)
 }
 
-// devShopd runs shopd in a tmux session with live reload
+// devShopd runs shopd backend in a tmux session
 func devShopd(session string) (err error) {
 	mg.Deps(mg.F(Dep, tmux))
 	mg.Deps(mg.F(Dep, air))
@@ -176,7 +176,12 @@ func devShopd(session string) (err error) {
 }
 
 // templWatcherCmd creates a command that uses the built-in templ watcher.
-// It rebuilds when templ files are changed and then calls the specified cmd
+// It rebuilds when templ files are changed and then calls the specified cmd.
+// Inspired by the Makefile example here
+// https://templ.guide/commands-and-tools/live-reload-with-other-tools/#setting-up-the-makefile
+// TODO Instead of the templ live reload proxy (doesn't work with https?),
+// rather make the web app poll the server version for reloads
+// https://templ.guide/commands-and-tools/live-reload
 func templWatcherCmd() string {
 	return fmt.Sprintf("%s generate -v --watch --path %s --cmd \"%s\"",
 		templ,
