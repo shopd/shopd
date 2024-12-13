@@ -79,16 +79,11 @@ func dev() (err error) {
 	// ...........................................................................
 	// Watch for...
 
-	// TODO ...site changes
+	// ...site changes (api and content templates)
 	err = tmuxNewWindow(txSession(EnvDev))
 	if err != nil {
 		return err
 	}
-	// TODO Remove this?
-	// err = devSite(txSession(EnvDev))
-	// if err != nil {
-	// 	return err
-	// }
 	err = devTempl(txSession(EnvDev))
 	if err != nil {
 		return err
@@ -158,7 +153,7 @@ func templWatcherCmd() string {
 	cmd := fmt.Sprintf("%s generate -v --watch --path %s --cmd \"%s\"",
 		templ,
 		filepath.Join(conf.Dir(), "www"),
-		"mage BuildSite dev")
+		mageCmd("BuildSite", "dev"))
 
 	return cmd
 }

@@ -16,12 +16,12 @@ func mageStaticPath() string {
 	return filepath.Join(conf.Dir(), "magefiles", "mage")
 }
 
-func mageCmd(task string, args ...string) (cmd string, err error) {
+func mageCmd(task string, args ...string) (cmd string) {
 	staticPath := mageStaticPath()
 	if len(args) > 0 {
-		return fmt.Sprintf("%s %s %s", staticPath, task, args[0]), nil
+		return fmt.Sprintf("%s %s %s", staticPath, task, args[0])
 	}
-	return fmt.Sprintf("%s %s", staticPath, task), nil
+	return fmt.Sprintf("%s %s", staticPath, task)
 }
 
 // BuildStaticMage builds a static executable for mage.
