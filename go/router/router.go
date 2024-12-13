@@ -4,11 +4,20 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
+	"github.com/shopd/shopd/go/router/templrenderer"
+	"github.com/shopd/shopd/go/share"
 )
 
 // TODO Pass in services
 func NewRouter() *gin.Engine {
 	r := gin.Default()
+
+	// TODO Zerolog Integration with Gin
+	// https://g.co/gemini/share/70fd8e96abb5
+	// r.Use(ginzerolog.Logger("gin"))
+
+	tr := NewTemplRegistry()
 
 	r.GET("/api/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -21,13 +30,15 @@ func NewRouter() *gin.Engine {
 			"message": "hello",
 		})
 	})
-
-	// TODO Zerolog Integration with Gin
-	// https://g.co/gemini/share/70fd8e96abb5
-
-	// TODO Templ integration
-	// https://templ.guide/integrations/web-frameworks/
-	// https://github.com/a-h/templ/blob/main/examples/integration-gin/main.go
+	r.GET("/login", func(c *gin.Context) {
+		t, err := tr.API("/login", share.GET)
+		if err != nil {
+			// TODO Not found
+			log.Error().Stack().Err(err).Msg("")
+		}
+		r := templrenderer.New(c.Request.Context(), http.StatusOK, t)
+		c.Render(http.StatusOK, r)
+	})
 
 	return r
 }

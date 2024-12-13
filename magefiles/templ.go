@@ -145,7 +145,7 @@ func TemplApiGen(env string) (err error) {
 		}
 	}
 
-	// API helper
+	// Register api templates
 	log.Info().Str("env", env).Msg("Register api components")
 	t, err := template.New("apiTemplate").Parse(apiTemplate)
 	if err != nil {
@@ -206,7 +206,7 @@ func TemplSiteGen(env string) (err error) {
 		}
 	}
 
-	// Static site helper
+	// Register content templates
 	if env == EnvDev {
 		log.Info().Str("env", env).Msg("Register static site components")
 		t, err := template.New("contentTemplate").Parse(contentTemplate)
@@ -250,7 +250,7 @@ func init() {
 	RegisterAPI = func(tr *TemplRegistry) {
 		{{range .Components}}
 		// {{.FilePath}}
-		tr.RegisterAPI("{{.Route}}", "{{.Method}}", {{.PackageName}}.{{.Constructor}}()){{end}}
+		tr.RegisterAPI("{{.Method}}", "{{.Route}}", {{.PackageName}}.{{.Constructor}}()){{end}}
 	}
 }
 `
@@ -264,7 +264,7 @@ import ({{range .Packages}}
 
 func init() {
 {{range .Components}}
-	RegisterStatic = func(tr *TemplRegistry) {
+	RegisterContent = func(tr *TemplRegistry) {
 		// {{.FilePath}}
 		tr.RegisterAPI("{{.Route}}", "{{.Method}}", {{.PackageName}}.{{.Constructor}}())
 	}
