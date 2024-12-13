@@ -15,7 +15,7 @@ Config
 ```bash
 APP_DIR=$(pwd) mage EnvGen dev example.com
 conf dev-example-com
-mage CaddyfileGenDev
+# https://github.com/mozey/config#toggling-env
 ```
 
 Run dev
@@ -28,13 +28,4 @@ mage dev
 Stop
 ```bash
 mage down dev
-```
-
-**TODO** Debug templ static gen cmd
-```bash
-mage DebugTemplStaticGen
-
-# templ generate -v --watch --path ./www --cmd "go run /Users/mozey/pro/shopd/shopd/cmd/shopd/main.go static gen --env dev"
-
-# templ generate -v --path ./www && go run ./cmd/shopd/... static gen --env dev
 ```
