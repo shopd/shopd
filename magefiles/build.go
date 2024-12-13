@@ -14,6 +14,8 @@ import (
 	"github.com/shopd/shopd/go/share"
 )
 
+// Do not hardcode env in code outside magefiles.
+// Use go/config package to read env vars
 const (
 	EnvDev  = "dev"
 	EnvProd = "prod"
