@@ -224,7 +224,7 @@ func TemplSiteGen(env string) (err error) {
 			os.Exit(1)
 		}
 		fileutil.WriteBytes(
-			filepath.Join(conf.Dir(), "go", "router", "init_static_templ.go"),
+			filepath.Join(conf.Dir(), "go", "router", "init_content_templ.go"),
 			buf.Bytes())
 
 	} else {
@@ -266,7 +266,7 @@ func init() {
 {{range .Components}}
 	RegisterContent = func(tr *TemplRegistry) {
 		// {{.FilePath}}
-		tr.RegisterAPI("{{.Route}}", "{{.Method}}", {{.PackageName}}.{{.Constructor}}())
+		tr.RegisterContent("{{.Route}}", {{.PackageName}}.{{.Constructor}}())
 	}
 {{end}}
 }

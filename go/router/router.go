@@ -25,13 +25,24 @@ func NewRouter() *gin.Engine {
 		})
 	})
 
+	r.GET("/api/login", func(c *gin.Context) {
+		t, err := tr.API(share.GET, "/api/login")
+		if err != nil {
+			// TODO Not found
+			log.Error().Stack().Err(err).Msg("")
+		}
+		r := templrenderer.New(c.Request.Context(), http.StatusOK, t)
+		c.Render(http.StatusOK, r)
+	})
+
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "hello",
 		})
 	})
+
 	r.GET("/login", func(c *gin.Context) {
-		t, err := tr.API("/login", share.GET)
+		t, err := tr.Content("/login")
 		if err != nil {
 			// TODO Not found
 			log.Error().Stack().Err(err).Msg("")
