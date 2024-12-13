@@ -66,11 +66,7 @@ func dev() (err error) {
 	}
 
 	// Pane for shopd backend
-	// err = tmuxSplitWindow(txSession(EnvDev), txVertical)
-	// if err != nil {
-	// 	return err
-	// }
-	// // Pane for shopd backend watcher
+	// err = tmuxSplitWindow(fmt.Sprintf("%s:0.0", txSession(EnvDev)), txVertical)
 	err = tmuxSplitWindow(fmt.Sprintf("%s:0.0", txSession(EnvDev)), txHorizontal)
 	if err != nil {
 		return err
@@ -89,7 +85,7 @@ func dev() (err error) {
 		return err
 	}
 
-	// TODO ...tailwind changes
+	// ...tailwind changes
 	err = tmuxSplitWindow(txSession(EnvDev), txVertical)
 	if err != nil {
 		return err
@@ -102,20 +98,20 @@ func dev() (err error) {
 	if err != nil {
 		return err
 	}
-	// err = devTailwind(txSession(EnvDev))
-	// if err != nil {
-	// 	return err
-	// }
+	err = devTailwind(txSession(EnvDev))
+	if err != nil {
+		return err
+	}
 
-	// TODO ...app changes
+	// ...app changes
 	err = tmuxSelectPane(fmt.Sprintf("%s:1.2", txSession(EnvDev)))
 	if err != nil {
 		return err
 	}
-	// err = devApp(txSession(EnvDev))
-	// if err != nil {
-	// 	return err
-	// }
+	err = devApp(txSession(EnvDev))
+	if err != nil {
+		return err
+	}
 
 	// ...........................................................................
 	// Watch for shopd changes
@@ -141,6 +137,47 @@ func dev() (err error) {
 	err = tmuxSelectPane(fmt.Sprintf("%s:0.1", txSession(EnvDev)))
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func appWatcherCmd() string {
+	appEntryPath := filepath.Join(conf.Dir(), "src", "app.ts")
+	outDir := filepath.Join(conf.Dir(), "build")
+	return fmt.Sprintf(`pnpx esbuild %s \
+		--bundle --outdir=%s --watch`, appEntryPath, outDir)
+}
+
+// devApp runs the web app watcher in a tmux session
+func devApp(session string) (err error) {
+	mg.Deps(mg.F(Dep, tmux))
+
+	log.Info().Msg("Web app live-reload watcher...")
+	err = tmuxSendCmd(session, appWatcherCmd())
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+func tailwindWatcherCmd() string {
+	appEntryPath := filepath.Join(conf.Dir(), "src", "app.css")
+	outPath := filepath.Join(conf.Dir(), "build", "app.css")
+	return fmt.Sprintf(`pnpx tailwindcss \
+		-i %s -o %s \
+		--minify --watch`, appEntryPath, outPath)
+}
+
+// devTailwind runs the tailwind watcher in a tmux session
+func devTailwind(session string) (err error) {
+	mg.Deps(mg.F(Dep, tmux))
+
+	log.Info().Msg("Tailwind live-reload watcher...")
+	err = tmuxSendCmd(session, tailwindWatcherCmd())
+	if err != nil {
+		return errors.WithStack(err)
 	}
 
 	return nil
