@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/shopd/shopd/go/router/templrenderer"
 	"github.com/shopd/shopd/go/share"
+	"github.com/shopd/shopd/www/components"
 )
 
 // TODO Pass in services
@@ -47,7 +48,9 @@ func NewRouter() *gin.Engine {
 			// TODO Not found
 			log.Error().Stack().Err(err).Msg("")
 		}
-		r := templrenderer.New(c.Request.Context(), http.StatusOK, t)
+		// TODO Create NewLayout constructor in templrenderer?
+		l := components.Layout(t)
+		r := templrenderer.New(c.Request.Context(), http.StatusOK, l)
 		c.Render(http.StatusOK, r)
 	})
 

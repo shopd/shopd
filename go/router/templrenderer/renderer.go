@@ -2,6 +2,7 @@
 // https://github.com/a-h/templ/blob/main/examples/integration-gin/main.go
 // Also see templ integration docs
 // https://templ.guide/integrations/web-frameworks/
+// TODO Move templ related code to package go/templ
 package templrenderer
 
 import (
