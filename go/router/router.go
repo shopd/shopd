@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
-	"github.com/shopd/shopd/go/router/templrenderer"
 	"github.com/shopd/shopd/go/share"
+	"github.com/shopd/shopd/go/templrendr"
 	"github.com/shopd/shopd/www/components"
 )
 
@@ -18,7 +18,7 @@ func NewRouter() *gin.Engine {
 	// https://g.co/gemini/share/70fd8e96abb5
 	// r.Use(ginzerolog.Logger("gin"))
 
-	tr := NewTemplRegistry()
+	tr := templrendr.NewRegistry()
 
 	r.GET("/api/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -32,7 +32,7 @@ func NewRouter() *gin.Engine {
 			// TODO Not found
 			log.Error().Stack().Err(err).Msg("")
 		}
-		r := templrenderer.New(c.Request.Context(), http.StatusOK, t)
+		r := templrendr.New(c.Request.Context(), http.StatusOK, t)
 		c.Render(http.StatusOK, r)
 	})
 
@@ -50,7 +50,7 @@ func NewRouter() *gin.Engine {
 		}
 		// TODO Create NewLayout constructor in templrenderer?
 		l := components.Layout(t)
-		r := templrenderer.New(c.Request.Context(), http.StatusOK, l)
+		r := templrendr.New(c.Request.Context(), http.StatusOK, l)
 		c.Render(http.StatusOK, r)
 	})
 

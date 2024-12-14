@@ -242,12 +242,13 @@ func TemplSiteGen(env string) (err error) {
 const apiTemplate = `
 package router
 
-import ({{range .Packages}}
+import (
+	"github.com/shopd/shopd/go/templrendr"{{range .Packages}}
 	"github.com/shopd/shopd{{.PackagePath}}"{{end}}
 )
 
 func init() {
-	RegisterAPI = func(tr *TemplRegistry) {
+	templrendr.RegisterAPI = func(tr *templrendr.Registry) {
 		{{range .Components}}
 		// {{.FilePath}}
 		tr.RegisterAPI("{{.Method}}", "{{.Route}}", {{.PackageName}}.{{.Constructor}}()){{end}}
@@ -258,13 +259,14 @@ func init() {
 const contentTemplate = `
 package router
 
-import ({{range .Packages}}
+import (
+	"github.com/shopd/shopd/go/templrendr"{{range .Packages}}
 	"github.com/shopd/shopd{{.PackagePath}}"{{end}}
 )
 
 func init() {
 {{range .Components}}
-	RegisterContent = func(tr *TemplRegistry) {
+	templrendr.RegisterContent = func(tr *templrendr.Registry) {
 		// {{.FilePath}}
 		tr.RegisterContent("{{.Route}}", {{.PackageName}}.{{.Constructor}}())
 	}

@@ -41,15 +41,15 @@ func ConfigGen() (err error) {
 	}
 
 	// Format code
-	cmd = exec.Command("go", "fmt",
+	cmd = exec.Command(goCmd, "fmt",
 		filepath.Join(conf.Dir(), "go", "config", "config.go"))
 	printCombinedOutput(cmd) // Ignore errors
 
-	cmd = exec.Command("go", "fmt",
+	cmd = exec.Command(goCmd, "fmt",
 		filepath.Join(conf.Dir(), "go", "config", "fn.go"))
 	printCombinedOutput(cmd) // Ignore errors
 
-	cmd = exec.Command("go", "fmt",
+	cmd = exec.Command(goCmd, "fmt",
 		filepath.Join(conf.Dir(), "go", "config", "template.go"))
 	printCombinedOutput(cmd) // Ignore errors
 

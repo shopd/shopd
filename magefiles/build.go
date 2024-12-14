@@ -95,6 +95,11 @@ func buildSite(
 		return ErrNotImplemented(fmt.Sprintf("for env %s", env))
 	}
 
+	// Format generated code
+	cmd := exec.Command(goCmd, "fmt",
+		filepath.Join(conf.Dir(), "go", "router", "..."))
+	printCombinedOutput(cmd) // Ignore errors
+
 	return nil
 }
 
