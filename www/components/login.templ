@@ -1,0 +1,74 @@
+package components
+
+// TODO These flags must be passed on the ViewModel
+// https://templ.guide/core-concepts/view-models/
+const login = true
+const switchAccount = false
+const verifyEmail = false
+
+templ Login() {
+	<form
+		x-data
+		id="login"
+		x-validate
+		hx-trigger="valid"
+		hx-post="/api/login"
+		hx-vals='js:{"Redirect": app.utils.query("Redirect")}'
+		hx-target="closest .container"
+		hx-target-error="#login-error"
+	>
+		<div>
+			if login {
+				// Show if the user is not logged in
+				<h1>
+					Login
+				</h1>
+			} else if switchAccount {
+				// ...user is logged in
+				<h1>
+					Switch Account
+				</h1>
+			} else if verifyEmail {
+				// ...user is not logged in and redirect is not empty
+				<h1>
+					Verify Email
+				</h1>
+			}
+		</div>
+		<div>
+			<div>
+				<input
+					id="email"
+					name="email"
+					class="input"
+					type="email"
+					placeholder="Your email address"
+					value=""
+					required
+					autofocus
+				/>
+			</div>
+			<p>
+				You will be emailed a One Time Password
+			</p>
+		</div>
+		<div>
+			<div>
+				<input
+					id="Username"
+					name="Username"
+					class="input"
+					type="text"
+					placeholder="Optional username"
+					value=""
+				/>
+			</div>
+		</div>
+		<div>
+			<div>
+				<button>Send Email</button>
+			</div>
+			<div id="login-error"></div>
+		</div>
+	</form>
+}
