@@ -7,7 +7,7 @@ import (
 	"github.com/mozey/logutil"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"github.com/shopd/shopd-proto/go/config"
+	"github.com/shopd/shopd/go/config"
 )
 
 // I wraps is.I
