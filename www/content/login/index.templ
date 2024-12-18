@@ -1,12 +1,12 @@
 package login
 
 import (
-    "github.com/shopd/shopd/www/view"
-    "github.com/shopd/shopd/www/components"
+	"github.com/shopd/shopd/www/view"
 )
 
 templ Index(model view.Content) {
-    @components.Login(view.Login{
-        ShowLogin: model.DomainConfig.CustomerLogin || model.DomainConfig.AdminLogin,
-    })
+	<div>
+	TODO Request GET /api/login on page load to show login form.
+	Form actions are different if there's an existing session
+	</div>
 }

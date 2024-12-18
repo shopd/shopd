@@ -4,7 +4,17 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/shopd/shopd/go/templrendr"
 )
+
+// Register is used to register templates for the Hypermedia API
+var Register templrendr.RegisterFunc = nil
+
+// RegisterContent is used to register content templates
+var RegisterContent templrendr.RegisterFunc = nil
+
+// NewContentRouter is the constructor for the content router
+var NewContentRouter templrendr.RegisterFunc = nil
 
 // TODO Pass in services
 func NewRouter() *gin.Engine {
@@ -15,7 +25,16 @@ func NewRouter() *gin.Engine {
 	// https://g.co/gemini/share/70fd8e96abb5
 	// r.Use(ginzerolog.Logger("gin"))
 
-	// tr := templrendr.NewRegistry()
+	tr := templrendr.NewRegistry()
+	if Register != nil {
+		Register(tr)
+	}
+	if RegisterContent != nil {
+		RegisterContent(tr)
+	}
+	if NewContentRouter != nil {
+		NewContentRouter(tr)
+	}
 
 	r.GET("/api/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

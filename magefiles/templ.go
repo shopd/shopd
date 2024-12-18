@@ -236,7 +236,7 @@ import (
 )
 
 func init() {
-	templrendr.Register = func(tr *templrendr.Registry) {
+	Register = func(tr *templrendr.Registry) {
 		{{range .Components}}
 		// {{.FilePath}}
 		tr.Register("{{.Method}}", "{{.Route}}", {{.PackageName}}.{{.Constructor}}()){{end}}
@@ -254,13 +254,18 @@ import (
 )
 
 func init() {
-{{range .Components}}
-	templrendr.RegisterContent = func(tr *templrendr.Registry) {
+	RegisterContent = func(tr *templrendr.Registry) {
 		content := view.Content{}
 
+		{{range .Components}}
 		// {{.FilePath}}
-		tr.RegisterContent("{{.Route}}", {{.PackageName}}.{{.Constructor}}(content))
+		tr.RegisterContent("{{.Route}}", {{.PackageName}}.{{.Constructor}}(content)){{end}}
 	}
-{{end}}
+
+	NewContentRouter = func(tr *templrendr.Registry) {
+		{{range .Components}}
+		// {{.}}
+		{{end}}
+	}
 }
 `

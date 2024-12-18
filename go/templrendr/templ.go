@@ -60,24 +60,12 @@ func (tr *Registry) ByRoute(route string) (c templ.Component, err error) {
 	return c, nil
 }
 
-// Register is used to register templates for the Hypermedia API
-var Register func(tr *Registry) = nil
-
-// RegisterContent is used to register content templates
-var RegisterContent func(tr *Registry) = nil
+type RegisterFunc func(tr *Registry)
 
 func NewRegistry() (tr *Registry) {
 	tr = &Registry{
 		api:     make(map[string]map[string]templ.Component),
 		content: make(map[string]templ.Component),
-	}
-
-	// Defined in the generated init func in the router package...
-	if Register != nil {
-		Register(tr)
-	}
-	if RegisterContent != nil {
-		RegisterContent(tr)
 	}
 
 	return tr

@@ -1,5 +1,7 @@
 package view
 
-type Login struct {
-	ShowLogin bool
+type LoginGet struct {
+}
+
+type LoginPost struct {
 }
