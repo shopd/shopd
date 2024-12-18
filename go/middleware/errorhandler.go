@@ -6,11 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ErrorMatcher interface {
-	// Match the error and return the object to be rendered,
-	// otherwise return false if the error is not matched
-	Match(err error) (obj any, matched bool)
-}
+// ErrorMatcher matches the error and return the object to be rendered,
+// otherwise return false if the error is not matched
+type ErrorMatcher func(err error) (obj any, matched bool)
 
 type ErrorHandlerParams struct {
 	// TODO Toggle output JSON or HTML
@@ -39,7 +37,7 @@ func ErrorHandler(params ErrorHandlerParams) gin.HandlerFunc {
 
 			// Try to match the error
 			for _, matcher := range params.Matchers {
-				obj, matched := matcher.Match(err.Err)
+				obj, matched := matcher(err.Err)
 				if matched {
 					// Error is rendered on the first match,
 					// assume the status code has already been set and don't override.
