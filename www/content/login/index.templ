@@ -1,7 +1,12 @@
 package login
 
-import "github.com/shopd/shopd/www/components"
+import (
+    "github.com/shopd/shopd/www/view"
+    "github.com/shopd/shopd/www/components"
+)
 
-templ Index() {
-    @components.Login()
+templ Index(model view.Content) {
+    @components.Login(view.Login{
+        ShowLogin: model.DomainConfig.CustomerLogin || model.DomainConfig.AdminLogin,
+    })
 }

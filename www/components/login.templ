@@ -1,12 +1,10 @@
 package components
 
-// TODO These flags must be passed on the ViewModel
-// https://templ.guide/core-concepts/view-models/
-const login = true
-const switchAccount = false
-const verifyEmail = false
+import (
+	"github.com/shopd/shopd/www/view"
+)
 
-templ Login() {
+templ Login(model view.Login) {
 	<form
 		x-data
 		id="login"
@@ -18,22 +16,21 @@ templ Login() {
 		hx-target-error="#login-error"
 	>
 		<div>
-			if login {
-				// Show if the user is not logged in
-				<h1>
-					Login
-				</h1>
-			} else if switchAccount {
-				// ...user is logged in
-				<h1>
-					Switch Account
-				</h1>
-			} else if verifyEmail {
-				// ...user is not logged in and redirect is not empty
-				<h1>
-					Verify Email
-				</h1>
-			}
+			// <h1>{model.Header}</h1>
+			// if login {
+			// 	// Show if the user is not logged in
+				
+			// } else if switchAccount {
+			// 	// ...user is logged in
+			// 	<h1>
+			// 		Switch Account
+			// 	</h1>
+			// } else if verifyEmail {
+			// 	// ...user is not logged in and redirect is not empty
+			// 	<h1>
+			// 		Verify Email
+			// 	</h1>
+			// }
 		</div>
 		<div>
 			<div>
@@ -66,7 +63,7 @@ templ Login() {
 		</div>
 		<div>
 			<div>
-				<button>Send Email</button>
+				<button>Verify Email</button>
 			</div>
 			<div id="login-error"></div>
 		</div>

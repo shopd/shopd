@@ -110,8 +110,8 @@ func apiMethod(fileName string) (method string, err error) {
 	return method, ErrNotImplemented(fmt.Sprintf("method %s", fileName))
 }
 
-// TemplApiGen generates router init file for templ api templates
-func TemplApiGen(env string) (err error) {
+// TemplGen generates router init for Hypermedia API templates
+func TemplGen() (err error) {
 	apiPackages := NewTemplPackages()
 
 	// Scan contents of www
@@ -145,8 +145,7 @@ func TemplApiGen(env string) (err error) {
 		}
 	}
 
-	// Register api templates
-	log.Info().Str("env", env).Msg("Register api components")
+	// Register Hypermedia API templates
 	t, err := template.New("apiTemplate").Parse(apiTemplate)
 	if err != nil {
 		log.Error().Stack().Err(err).Msg("")
@@ -168,9 +167,8 @@ func TemplApiGen(env string) (err error) {
 	return nil
 }
 
-// TemplSiteGen generates router init file for templ content templates
-// TODO Generate static site files for prod?
-func TemplSiteGen(env string) (err error) {
+// TemplContentGen generates router init for content templates
+func TemplContentGen() (err error) {
 	contentPackages := NewTemplPackages()
 
 	// Scan contents of www
@@ -207,33 +205,23 @@ func TemplSiteGen(env string) (err error) {
 	}
 
 	// Register content templates
-	if env == EnvDev {
-		log.Info().Str("env", env).Msg("Register static site components")
-		t, err := template.New("contentTemplate").Parse(contentTemplate)
-		if err != nil {
-			log.Error().Stack().Err(err).Msg("")
-			os.Exit(1)
-		}
-		buf := bytes.Buffer{}
-		err = t.Execute(&buf, map[string]any{
-			"Packages":   contentPackages.Packages(),
-			"Components": contentComponents,
-		})
-		if err != nil {
-			log.Error().Stack().Err(err).Msg("")
-			os.Exit(1)
-		}
-		fileutil.WriteBytes(
-			filepath.Join(conf.Dir(), "go", "router", "init_content_templ.go"),
-			buf.Bytes())
-
-	} else {
-		// Static site
-		return ErrNotImplemented(fmt.Sprintf("for env %s", env))
-		// TODO Generate www/public.
-		// Copy contents of www/static to www/public.
-		// Copy additional domain specific static content and overrides
+	t, err := template.New("contentTemplate").Parse(contentTemplate)
+	if err != nil {
+		log.Error().Stack().Err(err).Msg("")
+		os.Exit(1)
 	}
+	buf := bytes.Buffer{}
+	err = t.Execute(&buf, map[string]any{
+		"Packages":   contentPackages.Packages(),
+		"Components": contentComponents,
+	})
+	if err != nil {
+		log.Error().Stack().Err(err).Msg("")
+		os.Exit(1)
+	}
+	fileutil.WriteBytes(
+		filepath.Join(conf.Dir(), "go", "router", "init_content_templ.go"),
+		buf.Bytes())
 
 	return nil
 }
@@ -248,10 +236,10 @@ import (
 )
 
 func init() {
-	templrendr.RegisterAPI = func(tr *templrendr.Registry) {
+	templrendr.Register = func(tr *templrendr.Registry) {
 		{{range .Components}}
 		// {{.FilePath}}
-		tr.RegisterAPI("{{.Method}}", "{{.Route}}", {{.PackageName}}.{{.Constructor}}()){{end}}
+		tr.Register("{{.Method}}", "{{.Route}}", {{.PackageName}}.{{.Constructor}}()){{end}}
 	}
 }
 `
@@ -260,15 +248,18 @@ const contentTemplate = `
 package router
 
 import (
-	"github.com/shopd/shopd/go/templrendr"{{range .Packages}}
+	"github.com/shopd/shopd/go/templrendr"
+	"github.com/shopd/shopd/www/view"{{range .Packages}}
 	"github.com/shopd/shopd{{.PackagePath}}"{{end}}
 )
 
 func init() {
 {{range .Components}}
 	templrendr.RegisterContent = func(tr *templrendr.Registry) {
+		content := view.Content{}
+
 		// {{.FilePath}}
-		tr.RegisterContent("{{.Route}}", {{.PackageName}}.{{.Constructor}}())
+		tr.RegisterContent("{{.Route}}", {{.PackageName}}.{{.Constructor}}(content))
 	}
 {{end}}
 }

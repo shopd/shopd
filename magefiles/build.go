@@ -79,20 +79,18 @@ func BuildSite(
 func buildSite(
 	env string, envMap []string) (err error) {
 
-	log.Info().Str("env", env).Msg("Generate router init file for api")
-	err = TemplApiGen(env)
+	// Hypermedia API
+	log.Info().Str("env", env).Msg("Generate router init for Hypermedia API")
+	err = TemplGen()
 	if err != nil {
 		return err
 	}
 
-	if env == EnvDev {
-		log.Info().Str("env", env).Msg("Generate router init file for site content")
-		err = TemplSiteGen(env)
-		if err != nil {
-			return err
-		}
-	} else {
-		return ErrNotImplemented(fmt.Sprintf("for env %s", env))
+	// Content
+	log.Info().Str("env", env).Msg("Generate router init for site content")
+	err = TemplContentGen()
+	if err != nil {
+		return err
 	}
 
 	// Format generated code
