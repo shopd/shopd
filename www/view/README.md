@@ -12,4 +12,6 @@ Only for use in route handlers with the templ components in `/www`, generally th
 
 View models may embed shared data types.
 
-Domains may override existing components, but not the corresponding view models. Custom components may define their own view models
+**TODO** Domains may override existing components, but not the corresponding view models. Custom components may define their own view models. Implementing this would require two things
+- Ideally using templ cmd, e.g. `templ generate --override $DOMAIN_DIR/www` to override existing components
+- Generate init code in the router package that calls `NewCustomRouter(r *gin.Engine)` to add custom routes defined in the domain dir
