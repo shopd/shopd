@@ -21,7 +21,8 @@ func NewRouter() *gin.Engine {
 	r.GET("/api", ApiIndex)
 
 	// login
-	r.GET("/api/login", GetLogin)
+	r.GET("/login", GetLogin)
+	r.POST("/api/login", PostLoginAttempt)
 
 	return r
 }
