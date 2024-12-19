@@ -1,6 +1,71 @@
 package login
 
-// TODO Remove this file. For testing router init
-templ Get() {
-    <div><form>GET /api/login</form></div>
+import (
+	"github.com/shopd/shopd/www/view"
+)
+
+templ Get(model view.LoginGet) {
+	<form
+		x-data
+		id="login"
+		x-validate
+		hx-trigger="valid"
+		hx-post="/api/login"
+		hx-vals='js:{"Redirect": app.utils.query("Redirect")}'
+		hx-target="closest .container"
+		hx-target-error="#login-error"
+	>
+		<div>
+			// <h1>{model.Header}</h1>
+			// if login {
+			// 	// Show if the user is not logged in
+				
+			// } else if switchAccount {
+			// 	// ...user is logged in
+			// 	<h1>
+			// 		Switch Account
+			// 	</h1>
+			// } else if verifyEmail {
+			// 	// ...user is not logged in and redirect is not empty
+			// 	<h1>
+			// 		Verify Email
+			// 	</h1>
+			// }
+		</div>
+		<div>
+			<div>
+				<input
+					id="email"
+					name="email"
+					class="input"
+					type="email"
+					placeholder="Your email address"
+					value=""
+					required
+					autofocus
+				/>
+			</div>
+			<p>
+				You will be emailed a One Time Password
+			</p>
+		</div>
+		<div>
+			<div>
+				<input
+					id="Username"
+					name="Username"
+					class="input"
+					type="text"
+					placeholder="Optional username"
+					value=""
+				/>
+			</div>
+		</div>
+		<div>
+			<div>
+				<button>Verify Email</button>
+			</div>
+			<div id="login-error"></div>
+		</div>
+	</form>
 }

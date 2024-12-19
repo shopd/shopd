@@ -184,7 +184,7 @@ func devTailwind(session string) (err error) {
 }
 
 func shopdWatcherCmd() string {
-	binPath := filepath.Join(conf.Dir(), "build", "bin")
+	binPath := filepath.Join(conf.Dir(), "build", "shopd")
 	mainPath := filepath.Join(conf.Dir(), "cmd", "shopd", "main.go")
 	return fmt.Sprintf(`%s \
 	--build.cmd "go build -o %s %s" \

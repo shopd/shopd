@@ -1,5 +1,7 @@
 package login
 
-templ Post() {
-    <div><form>POST /api/login</form></div>
+import "github.com/shopd/shopd/www/view"
+
+templ Post(model view.LoginPost) {
+	<div><form>TODO hx-post="/api/login" on /login form</form></div>
 }

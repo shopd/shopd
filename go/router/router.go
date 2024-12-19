@@ -3,53 +3,53 @@ package router
 import (
 	"net/http"
 
+	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog/log"
-	"github.com/shopd/shopd/go/router/templrenderer"
-	"github.com/shopd/shopd/go/share"
+	"github.com/shopd/shopd/www/components"
 )
+
+type RouteHandler struct {
+}
+
+// Template renders a templ component
+func (h *RouteHandler) Template(
+	r *http.Request, template templ.Component) *Renderer {
+	return NewRenderer(r.Context(), template)
+}
+
+// Content renders a templ component with layout
+func (h *RouteHandler) Content(
+	r *http.Request, template templ.Component) *Renderer {
+	return NewRenderer(r.Context(), components.Layout(template))
+}
 
 // TODO Pass in services
 func NewRouter() *gin.Engine {
+	h := RouteHandler{}
+
 	r := gin.Default()
+	r.Use(gin.Recovery())
 
 	// TODO Zerolog Integration with Gin
 	// https://g.co/gemini/share/70fd8e96abb5
 	// r.Use(ginzerolog.Logger("gin"))
 
-	tr := NewTemplRegistry()
+	// ...........................................................................
+	// Standard routes
 
-	r.GET("/api/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	// index
+	r.GET("/", h.Index)
+	r.GET("/api", h.ApiIndex)
 
-	r.GET("/api/login", func(c *gin.Context) {
-		t, err := tr.API(share.GET, "/api/login")
-		if err != nil {
-			// TODO Not found
-			log.Error().Stack().Err(err).Msg("")
-		}
-		r := templrenderer.New(c.Request.Context(), http.StatusOK, t)
-		c.Render(http.StatusOK, r)
-	})
-
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "hello",
-		})
-	})
-
-	r.GET("/login", func(c *gin.Context) {
-		t, err := tr.Content("/login")
-		if err != nil {
-			// TODO Not found
-			log.Error().Stack().Err(err).Msg("")
-		}
-		r := templrenderer.New(c.Request.Context(), http.StatusOK, t)
-		c.Render(http.StatusOK, r)
-	})
+	// login
+	r.GET("/login", h.GetLogin)
+	r.POST("/api/login", h.PostLoginAttempt)
 
 	return r
+}
+
+// TODO Is this even useful? Rather don't match errors,
+// and remove go/middleware/errorhandler.go
+func ErrorMatcher(err error) (obj any, matched bool) {
+	return nil, false
 }
