@@ -29,6 +29,8 @@ func (r *HTMLTemplRenderer) Instance(s string, d any) render.Render {
 	}
 }
 
+// New constructs a new gin renderer for a templ component
+// https://github.com/a-h/templ/blob/main/examples/integration-gin/main.go
 func New(ctx context.Context, status int, component templ.Component) *Renderer {
 	return &Renderer{
 		Ctx:       ctx,

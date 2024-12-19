@@ -79,24 +79,7 @@ func BuildSite(
 func buildSite(
 	env string, envMap []string) (err error) {
 
-	// Hypermedia API
-	log.Info().Str("env", env).Msg("Generate router init for Hypermedia API")
-	err = TemplGen()
-	if err != nil {
-		return err
-	}
-
-	// Content
-	log.Info().Str("env", env).Msg("Generate router init for site content")
-	err = TemplContentGen()
-	if err != nil {
-		return err
-	}
-
-	// Format generated code
-	cmd := exec.Command(goCmd, "fmt",
-		filepath.Join(conf.Dir(), "go", "router", "..."))
-	printCombinedOutput(cmd) // Ignore errors
+	// TODO Nothing to do here?
 
 	return nil
 }
