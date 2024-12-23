@@ -6,13 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopd/shopd/www/api"
 	"github.com/shopd/shopd/www/content"
-	"github.com/shopd/shopd/www/view"
 )
 
 func (h *RouteHandler) Index(c *gin.Context) {
-	c.Render(http.StatusOK, h.Content(c.Request, content.Index(view.Content{})))
+	c.Render(http.StatusOK, h.Content(c.Request, content.Index))
 }
 
 func (h *RouteHandler) ApiIndex(c *gin.Context) {
-	c.Render(http.StatusOK, h.Content(c.Request, api.Index()))
+	c.Render(http.StatusOK, h.Content(c.Request, api.Index))
 }

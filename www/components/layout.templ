@@ -1,12 +1,15 @@
 package components
 
-templ Layout(content templ.Component) {
-    <!DOCTYPE html>
-    <html lang="en">
-    @Head()
-    <body>
-    @content
-    </body>
-    @Footer()
-    </html>
+import "github.com/shopd/shopd/www/view"
+
+templ Layout(model view.Content, content templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		@Head(model)
+		<body>
+			@content
+		</body>
+		@Footer(model)
+		@Scripts(model)
+	</html>
 }

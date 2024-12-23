@@ -10,7 +10,7 @@ import (
 )
 
 func (h *RouteHandler) GetLogin(c *gin.Context) {
-	c.Render(http.StatusOK, h.Content(c.Request, content.Index(view.Content{})))
+	c.Render(http.StatusOK, h.Content(c.Request, content.Index))
 }
 
 func (h *RouteHandler) PostLoginAttempt(c *gin.Context) {
