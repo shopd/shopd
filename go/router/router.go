@@ -31,7 +31,7 @@ func (h *RouteHandler) Content(
 // TODO Pass in services
 func NewRouter() *gin.Engine {
 	h := RouteHandler{}
-	h.model = view.Content{}
+	h.model = *view.NewContent()
 
 	r := gin.Default()
 	r.Use(gin.Recovery())
