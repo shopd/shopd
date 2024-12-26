@@ -3,7 +3,7 @@
 Portable e-commerce https://shopd.link
 - Mobile first
 - Easy to move, uses an SQLite DB file
-- Fast, mostly static content
+- Fast, Hypermedia API and SSR
 - Self-contained web service
 - Cross compile to run on your host OS
 
