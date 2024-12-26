@@ -3,5 +3,5 @@ package components
 import "github.com/shopd/shopd/www/view"
 
 templ Scripts(model view.Content) {
-	<script src={model.BaseURL("/deps/htmx.js")}></script>
+	<script src={ model.StaticURL("htmx.js") }></script>
 }

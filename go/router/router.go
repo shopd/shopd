@@ -2,10 +2,12 @@ package router
 
 import (
 	"net/http"
+	"path/filepath"
 
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
 	"github.com/shopd/shopd-proto/go/share"
+	"github.com/shopd/shopd/go/config"
 	"github.com/shopd/shopd/www/components"
 	"github.com/shopd/shopd/www/view"
 )
@@ -30,7 +32,7 @@ func (h *RouteHandler) Content(
 }
 
 // TODO Pass in services
-func NewRouter() *gin.Engine {
+func NewRouter(conf *config.Config) *gin.Engine {
 	h := RouteHandler{}
 	h.model = view.NewContent(view.ContentParams{
 		BaseURL:      "https://localhost:8443/",  // TODO Use config
@@ -54,6 +56,10 @@ func NewRouter() *gin.Engine {
 	// login
 	r.GET("/login", h.GetLogin)
 	r.POST("/api/login", h.PostLoginAttempt)
+
+	// static
+	staticRoot := filepath.Join(conf.Dir(), "www", "static")
+	r.Static("/s", staticRoot)
 
 	return r
 }

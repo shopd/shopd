@@ -2,6 +2,7 @@ package view
 
 import (
 	"net/url"
+	"path"
 
 	"github.com/shopd/shopd-proto/go/share"
 )
@@ -15,6 +16,13 @@ type Content struct {
 func (c *Content) BaseURL(p string) string {
 	u, _ := url.Parse(c.baseURL)
 	u.Path = p
+	return u.String()
+}
+
+// StaticURL appends path to the static URL
+func (c *Content) StaticURL(p string) string {
+	u, _ := url.Parse(c.baseURL)
+	u.Path = path.Join("s", p)
 	return u.String()
 }
 
