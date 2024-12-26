@@ -5,6 +5,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
+	"github.com/shopd/shopd-proto/go/share"
 	"github.com/shopd/shopd/www/components"
 	"github.com/shopd/shopd/www/view"
 )
@@ -31,7 +32,10 @@ func (h *RouteHandler) Content(
 // TODO Pass in services
 func NewRouter() *gin.Engine {
 	h := RouteHandler{}
-	h.model = *view.NewContent()
+	h.model = view.NewContent(view.ContentParams{
+		BaseURL:      "https://localhost:8443/",  // TODO Use config
+		DomainConfig: share.DomainConfigExport{}, // TODO Domain config
+	})
 
 	r := gin.Default()
 	r.Use(gin.Recovery())

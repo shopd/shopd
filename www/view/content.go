@@ -8,7 +8,7 @@ import (
 
 type Content struct {
 	baseURL      string
-	DomainConfig share.DomainConfigExport
+	domainConfig share.DomainConfigExport
 }
 
 // BaseURL appends a path to baseURL
@@ -18,8 +18,18 @@ func (c *Content) BaseURL(p string) string {
 	return u.String()
 }
 
-func NewContent() *Content {
-	return &Content{
-		baseURL: "https://localhost:8443/",
+func (c *Content) DomainConfig() share.DomainConfigExport {
+	return c.domainConfig
+}
+
+type ContentParams struct {
+	BaseURL      string
+	DomainConfig share.DomainConfigExport
+}
+
+func NewContent(params ContentParams) Content {
+	return Content{
+		baseURL:      params.BaseURL,
+		domainConfig: params.DomainConfig,
 	}
 }
