@@ -1,6 +1,10 @@
 # shopd
 
-Mostly static e-commerce https://shopd.link
+Portable e-commerce https://shopd.link
+- Small and self-contained
+- Easy to move, uses an SQLite DB file
+- Cross compile to run on your host OS
+- Mobile first
 
 
 ## Quick Start
