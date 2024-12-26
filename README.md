@@ -1,10 +1,11 @@
 # shopd
 
 Portable e-commerce https://shopd.link
-- Small and self-contained
-- Easy to move, uses an SQLite DB file
-- Cross compile to run on your host OS
 - Mobile first
+- Easy to move, uses an SQLite DB file
+- Fast, mostly static content
+- Self-contained web service
+- Cross compile to run on your host OS
 
 
 ## Quick Start
