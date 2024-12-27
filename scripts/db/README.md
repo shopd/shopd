@@ -1,9 +1,5 @@
 # scripts/db
 
-## Usage
-
-See [DB docs](https://github.com/shopd/shopd-proto/blob/main/README.md#db)
-
 
 ## Naming Conventions
 
@@ -33,10 +29,6 @@ Tables with the same name prefix are grouped together in the schema definition. 
 - Create related bridge or meta tables
 - Indexes and triggers on related tables
 
-Search relies on the built-in features of SQLite, with a separate index for full-text search, see [Searching the store](https://github.com/shopd/shopd-proto-issues/issues/21)
-
-**Extension tables** start with underscore, i.e. *"_something_foo"*. Extension taxonomies and terms must use the corresponding prefix, e.g. *"_something"*
-
 Table with the following cols must always include them last in this order
 - `mod` (modified timestamp)
 - `del` (deleted timestamp, set to *0* if not deleted)
@@ -65,4 +57,3 @@ select * from email('fts5')
 
 "advanced searches are requested by providing a more complicated **FTS5 query string**", see [full-text query syntax](https://www.sqlite.org/fts5.html#full_text_query_syntax)
 
-[shopd-issues/issues/21](https://github.com/shopd/shopd-proto-issues/issues/21)

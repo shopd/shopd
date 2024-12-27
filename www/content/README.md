@@ -1,10 +1,11 @@
 # www/content
 
-Static site content
+Site content
 
 Conventions
 - Each file contains one component, and the function name must be `Index`
-- The generated HTML file will have the same name, e.g. `login/index.templ` will generate `login/index.html`
-- File not named index will add another path segment, e.g. `store/apples.templ` will generate `store/apples/index.html`, and `store/oranges.templ` will generate `store/oranges/index.html`
+- Content components all receive the same param, the `Content` view model
+- The index files renders the dir path, e.g. `login/index.templ` renders `GET /login`
+- Files not named index will add another path segment, e.g. `store/apples.templ` renders `GET /store/apples/`, and `store/oranges.templ` renders `GET /store/oranges/`
 
-The conventions above make it possible to create domain specific override files
+**TODO** See comments in `www/view/README.md` re. overrides

@@ -1,5 +1,57 @@
 package login
 
-templ Index() {
-    <div class="bg-slate-500 ml-2">login content</div>
+import "github.com/shopd/shopd/www/view"
+
+templ Index(model view.Content) {
+	// TODO Validation to trigger hx
+	<form
+		x-data
+		id="login"
+		x-validate
+		hx-trigger="valid"
+		hx-post="/api/login"
+		hx-vals='js:{"Redirect": app.utils.query("Redirect")}'
+		hx-target="closest .container"
+		hx-target-error="#login-error"
+	>
+		<div>
+			// TODO Change header text to "Switch User" if session is valid
+			<h1>Login</h1>
+		</div>
+		<div>
+			<div>
+				<input
+					id="email"
+					name="email"
+					class="input"
+					type="email"
+					placeholder="Your email address"
+					value=""
+					required
+					autofocus
+				/>
+			</div>
+			<p>
+				You will be emailed a One Time Password
+			</p>
+		</div>
+		<div>
+			<div>
+				<input
+					id="Username"
+					name="Username"
+					class="input"
+					type="text"
+					placeholder="Optional username"
+					value=""
+				/>
+			</div>
+		</div>
+		<div>
+			<div>
+				<button>Verify Email</button>
+			</div>
+			<div id="login-error"></div>
+		</div>
+	</form>
 }

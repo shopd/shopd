@@ -51,7 +51,7 @@ func NewServer(conf *config.Config, params NewServerParams) (
 	}
 
 	// Setup HTTP server
-	r := router.NewRouter()
+	r := router.NewRouter(conf)
 	rh = NewRunHandler()
 	rh.Server = http.Server{}
 	rh.Handler = r.Handler()

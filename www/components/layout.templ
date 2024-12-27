@@ -1,0 +1,16 @@
+package components
+
+import "github.com/shopd/shopd/www/view"
+
+templ Layout(model view.Content, content templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		@Head(model)
+		// TODO hx-headers etc
+		<body>
+			@content
+		</body>
+		@Footer(model)
+		@Scripts(model)
+	</html>
+}
