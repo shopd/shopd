@@ -2,15 +2,17 @@
 
 Portable e-commerce https://shopd.link
 - Mobile first
-- Easy to move, uses an SQLite DB file
 - Fast, Hypermedia API and SSR
-- Self-contained web service
 - Cross compile to run on your host OS
+- Easy to move, uses an SQLite DB file
+- Stores user content and config in the same directory
+- Self-contained web service
+- Does not require other software to be installed<sup>[1]</sup>
 
 
 ## Quick Start
 
-Install dependencies
+Install dev dependencies
 ```bash
 go mod vendor
 pnpm install
@@ -34,3 +36,10 @@ Stop
 ```bash
 mage down dev
 ```
+
+
+## Footnotes
+
+[1] Plugins may depend on additional software
+
+
