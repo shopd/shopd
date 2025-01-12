@@ -161,11 +161,11 @@ func EnvGen(env, domain string) (err error) {
 
 const envPortsTemplate = `# Caddy is used as an API Gateway,
 # and proxies requests to /api to this port
-APP_PORT_API="{{.API}}"
-APP_PORT_CADDY="{{.Caddy}}"`
+export APP_PORT_API="{{.API}}"
+export APP_PORT_CADDY="{{.Caddy}}"`
 
 const envConfigTemplatesTemplate = `# Config templates
-APP_TEMPLATE_DOMAIN_DIR="{{.Dir}}/domains/{{.Domain}}"`
+export APP_TEMPLATE_DOMAIN_DIR="{{.Dir}}/domains/{{.Domain}}"`
 
 const envTemplate = `# Code generated with https://github.com/shopd/shopd
 
@@ -173,20 +173,20 @@ const envTemplate = `# Code generated with https://github.com/shopd/shopd
 
 {{.Templates.Deps}}
 
-APP_DOMAIN="{{.Settings.Domain}}"
-APP_DOMAIN_HOSTS="{{.Settings.Hosts}}"
+export APP_DOMAIN="{{.Settings.Domain}}"
+export APP_DOMAIN_HOSTS="{{.Settings.Hosts}}"
 
 {{.Templates.Email}}
 
 {{.Templates.Http}}
 
 # InstanceID must be unique, like Domain, but it can be a shorter code
-APP_INSTANCE_ID="shopd"
+export APP_INSTANCE_ID="shopd"
 
 {{.Templates.Limits}}
 
 # Connections as per config
-APP_LISTEN="{{.Listen}}"
+export APP_LISTEN="{{.Listen}}"
 
 {{.Templates.Nats}}
 
@@ -198,4 +198,4 @@ APP_LISTEN="{{.Listen}}"
 
 {{.Templates.Ext}}
 
-AWS_PROFILE={{.Profile}}`
+export AWS_PROFILE={{.Profile}}`
