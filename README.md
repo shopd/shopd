@@ -9,7 +9,7 @@ Portable e-commerce
 - Fast, Hypermedia API and SSR
 - Cross compile to run on your host OS
 - Easy to move, uses an SQLite DB file
-- Stores user content and config in the same directory
+- Stores data, user content, and config in the same directory
 - Self-contained web service
 - Does not require other software to be installed
 
