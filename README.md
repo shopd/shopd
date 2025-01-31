@@ -1,13 +1,17 @@
+WIP This repo is an open source rewrite (using [templ](https://templ.guide/) and [Tailwind CSS](https://tailwindcss.com/)) of the closed prototype ([hugo](https://gohugo.io/) plugin) hosted at [shopd.link](https://shopd.link/)
+
+
+---
 # shopd
 
-Portable e-commerce https://shopd.link
+Portable e-commerce
 - Mobile first
 - Fast, Hypermedia API and SSR
 - Cross compile to run on your host OS
 - Easy to move, uses an SQLite DB file
 - Stores user content and config in the same directory
 - Self-contained web service
-- Does not require other software to be installed<sup>[1]</sup>
+- Does not require other software to be installed
 
 
 ## Quick Start
@@ -20,9 +24,9 @@ pnpm install
 
 Config
 ```bash
-APP_DIR=$(pwd) mage EnvGen dev example.com
-conf dev-example-com
-# https://github.com/mozey/config#toggling-env
+export APP_DIR=$(pwd)
+mage EnvGen dev example.com
+source .env.dev-example-com.sh
 ```
 
 Run dev
@@ -36,10 +40,5 @@ Stop
 ```bash
 mage down dev
 ```
-
-
-## Footnotes
-
-[1] Plugins may depend on additional software
 
 
