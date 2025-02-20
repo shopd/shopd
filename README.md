@@ -1,4 +1,4 @@
-WIP This repo is an open source rewrite (using [templ](https://templ.guide/) and [Tailwind CSS](https://tailwindcss.com/)) of the closed prototype ([hugo](https://gohugo.io/) plugin) hosted at [shopd.link](https://shopd.link/)
+🏗️ WIP 🚧 This repo is an open source rewrite (using [templ](https://templ.guide/) and [Tailwind CSS](https://tailwindcss.com/)) of the closed prototype ([hugo](https://gohugo.io/) plugin) hosted at [shopd.link](https://shopd.link/) 👷
 
 
 ---
